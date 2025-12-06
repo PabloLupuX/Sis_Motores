@@ -40,7 +40,9 @@ const model = computed<MenuItem[]>(() => [
     {
         label: 'Gestion de Trabajo',
         items: [
-            hasPermission('ver espacios') && { label: 'Espacios', icon: 'pi pi-fw pi-briefcase', to: '/espacios' },
+            hasPermission('ver clientes') && { label: 'Clientes', icon: 'pi pi-fw pi-users', to: '/clientes' },
+            hasPermission('ver motores') && { label: 'Lista de Motores', icon: 'pi pi-fw pi-cog', to: '/motores' },
+            hasPermission('ver accesorios') && { label: 'Lista de Accesorios', icon: 'pi pi-fw pi-briefcase', to: '/accesorios' },
         ].filter(Boolean) as MenuItem[],
     },
     {

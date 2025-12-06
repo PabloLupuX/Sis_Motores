@@ -131,3 +131,8 @@ const links = [
   { text: "Contacto", href: "#contacto" },
 ];
 </script>
+<style>
+a.text-gray-800.hover\:text-blue-800.transition.dark\:text-gray-200.dark\:hover\:text-cyan-400 {
+    margin: 5px;
+}
+</style>

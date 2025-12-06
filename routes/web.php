@@ -3,14 +3,19 @@
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ConsultasDni;
 use App\Http\Controllers\Api\ConsultasId;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\EngineController;
 use App\Http\Controllers\Api\RolesController;
 use App\Http\Controllers\Api\UsuariosController;
-use App\Http\Controllers\Api\SpaceController;
+use App\Http\Controllers\Api\AccessoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Reportes\SpacePDFController;
-use App\Http\Controllers\Web\SpaceWebController;
+use App\Http\Controllers\Web\CustomersWebController;
 use App\Http\Controllers\Web\UsuarioWebController;
-
+use App\Http\Controllers\Web\EnginesWebController;
+use App\Http\Controllers\Reportes\CustomerPDFController;
+use App\Http\Controllers\Reportes\EnginePDFController;
+use App\Http\Controllers\Reportes\AccessoriesPDFController;
+use App\Http\Controllers\Web\AccessoriesWebController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     #VISTAS DEL FRONTEND
-    Route::get('/espacios', [SpaceWebController::class, 'index'])->name('index.view');
+    Route::get('/clientes', [CustomersWebController::class, 'index'])->name('index.view');
+    Route::get('/motores', [EnginesWebController::class, 'index'])->name('index.view');
+    Route::get('/accesorios', [AccessoriesWebController::class, 'index'])->name('index.view');
     Route::get('/usuario', [UsuarioWebController::class, 'index'])->name('index.view');
     Route::get('/roles', [UsuarioWebController::class, 'roles'])->name('roles.view');
     Route::get('/datos/dashboard', [DashboardController::class, 'getdatos']);
@@ -38,13 +45,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/consulta/{dni}', [ConsultasDni::class, 'consultar'])->name('consultar.dni');
     Route::get('/user-id', [ConsultasId::class, 'getUserId'])->middleware('auth:api');
 
-    // ESPACIO -> BACKEND
-    Route::prefix('espacio')->group(function () {
-        Route::get('/', [SpaceController::class, 'index'])->name('espacio.index');
-        Route::post('/', [SpaceController::class, 'store'])->name('espacios.store');
-        Route::get('/{space}', [SpaceController::class, 'show'])->name('espacios.show');
-        Route::put('/{space}', [SpaceController::class, 'update'])->name('espacios.update');
-        Route::delete('/{space}', [SpaceController::class, 'destroy'])->name('espacios.destroy');
+
+    // CLIENTE -> BACKEND
+    Route::prefix('cliente')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('clientes.index');
+        Route::post('/', [CustomerController::class, 'store'])->name('clientes.store');
+        Route::get('/{customer}', [CustomerController::class, 'show'])->name('clientes.show');
+        Route::put('/{customer}', [CustomerController::class, 'update'])->name('clientes.update');
+        Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('clientes.destroy');
+    });
+
+    // MOTORES -> BACKEND
+    Route::prefix('motor')->group(function () {
+        Route::get('/', [EngineController::class, 'index'])->name('motores.index');
+        Route::post('/', [EngineController::class, 'store'])->name('motores.store');
+        Route::get('/{engine}', [EngineController::class, 'show'])->name('motores.show');
+        Route::put('/{engine}', [EngineController::class, 'update'])->name('motores.update');
+        Route::delete('/{engine}', [EngineController::class, 'destroy'])->name('motores.destroy');
+    });
+    // ACCESORIOS -> BACKEND
+    Route::prefix('accesorio')->group(function () {
+        Route::get('/', [AccessoryController::class, 'index'])->name('accesorios.index');
+        Route::post('/', [AccessoryController::class, 'store'])->name('accesorios.store');
+        Route::get('/{accessory}', [AccessoryController::class, 'show'])->name('accesorios.show');
+        Route::put('/{accessory}', [AccessoryController::class, 'update'])->name('accesorios.update');
+        Route::delete('/{accessory}', [AccessoryController::class, 'destroy'])->name('accesorios.destroy');
     });
 
     #USUARIOS -> BACKEND
@@ -68,8 +93,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('panel/reports')->group(function () {
 
         #EXPORTACION Y IMPORTACION ESPACIOS
-        Route::get('/export-excel-spaces', [SpaceController::class, 'exportExcel'])->name('export-excel-spaces');
-        Route::get('/export-pdf-spaces', [SpacePDFController::class, 'exportPDF'])->name('export-pdf-spaces');
+        Route::get('/export-excel-customers', [CustomerController::class, 'exportExcel'])->name('export-excel-customers');
+        Route::get('/export-excel-engines', [EngineController::class, 'exportExcel'])->name('export-excel-engines');
+        Route::get('/export-excel-accessories', [AccessoryController::class, 'exportExcel'])->name('export-excel-accessories');
+        Route::get('/export-pdf-customers', [CustomerPDFController::class, 'exportPDF'])->name('export-pdf-customers');
+        Route::get('/export-pdf-engines', [EnginePDFController::class, 'exportPDF'])->name('export-pdf-engines');
+        Route::get('/export-pdf-accessories', [AccessoriesPDFController::class, 'exportPDF'])->name('export-pdf-accessories');
     });
 });
             //RUTAS PARA QUE PASEN EL TEST

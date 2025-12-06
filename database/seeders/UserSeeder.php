@@ -30,19 +30,8 @@ class UserSeeder extends Seeder{
             'restablecimiento' => 0,
         ]);
 
-        $admin_2 = User::create([
-            'name' => 'Karin Hair',
-            'dni' => '77777777',
-            'apellidos' => 'Chozo',
-            'nacimiento' => '2003-03-11',
-            'email' => 'kayisanta5@gmail.com',
-            'username' => 'kchozo27',
-            'password' => Hash::make('12345678'),
-            'status' => true,
-            'restablecimiento' => 0,
-        ]);
+        
 
         $admin_1->assignRole($adminRole);
-        $admin_2->assignRole($adminRole);
     }
 }

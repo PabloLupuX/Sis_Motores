@@ -38,7 +38,7 @@ const cancelLogout = () => {
       <!-- Logo con ícono + texto -->
       <Link href="/dashboard" class="layout-topbar-logo flex items-center gap-2">
           <WrenchIcon class="h-8 w-8 text-primary" />
-          <span class="font-serif text-base font-semibold">Sistema de Logistica</span>
+          <span class="font-serif text-base font-semibold">Sistema Náutica</span>
       </Link>
     </div>
 
