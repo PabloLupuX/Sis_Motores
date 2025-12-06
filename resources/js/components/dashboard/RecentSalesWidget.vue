@@ -1,0 +1,62 @@
+<script setup lang="ts">
+import {  ref } from 'vue'
+//import { ProductService } from '@/service/ProductService'
+
+// 👇 importar componentes PrimeVue
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+
+const products = ref<any[] | null>(null)
+
+function formatCurrency(value: number) {
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  })
+}
+
+/*onMounted(() => {
+  ProductService.getProductsSmall().then((data) => {
+    products.value = data
+  })
+})*/
+</script>
+
+<template>
+  <div class="card">
+    <div class="font-semibold text-xl mb-4">Recent Sales</div>
+
+    <DataTable
+      :value="products"
+      :rows="5"
+      :paginator="true"
+      responsiveLayout="scroll"
+    >
+      <Column style="width: 15%" header="Image">
+        <template #body="slotProps">
+          <img
+            :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
+            :alt="slotProps.data.image"
+            width="50"
+            class="shadow"
+          />
+        </template>
+      </Column>
+
+      <Column field="name" header="Name" :sortable="true" style="width: 35%" />
+
+      <Column field="price" header="Price" :sortable="true" style="width: 35%">
+        <template #body="slotProps">
+          {{ formatCurrency(slotProps.data.price) }}
+        </template>
+      </Column>
+
+      <Column style="width: 15%" header="View">
+        <template #body>
+          <Button icon="pi pi-search" type="button" class="p-button-text" />
+        </template>
+      </Column>
+    </DataTable>
+  </div>
+</template>
