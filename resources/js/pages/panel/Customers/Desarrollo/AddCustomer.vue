@@ -8,7 +8,7 @@ import InputText from 'primevue/inputtext';
 import Checkbox from 'primevue/checkbox';
 import Tag from 'primevue/tag';
 import { useToast } from 'primevue/usetoast';
-import ToolsCustomer from './ToolsCustomer.vue';
+import ToolsCustomer from './toolsCustomer.vue';
 
 // Interfaces
 interface Customer {

@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { useToast } from 'primevue/usetoast';
-import ToolsEngine from './ToolsEngine.vue';
+import ToolsEngine from './toolsEngine.vue';
 
 // Interfaces
 interface Engine {

@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { useToast } from 'primevue/usetoast';
-import ToolsAccessories from './ToolsAccessories.vue';
+import ToolsAccessories from './toolsAccessories.vue';
 
 // Interfaces
 interface Accessory {
