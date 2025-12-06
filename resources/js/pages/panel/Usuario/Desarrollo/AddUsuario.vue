@@ -67,31 +67,21 @@
                     <label for="nacimiento" class="block font-bold mb-3">
                         Fecha de nacimiento <span class="text-red-500">*</span>
                     </label>
-                    <InputText 
-                        v-model="usuario.nacimiento" 
-                        :disabled="!editableNacimiento" 
+                    <Calendar
+                        id="nacimiento"
+                        v-model="usuario.nacimiento"
+                        dateFormat="dd/mm/yy"
+                        showIcon
+                        placeholder="Seleccionar fecha"
                         fluid
-                        placeholder="dd/mm/yyyy"
+                        @date-select="actualizarUsername"
                     />
-                    <div class="mt-2 flex gap-2 flex-wrap">
-                        <Button 
-                            v-if="!editableNacimiento" 
-                            label="Desbloquear" 
-                            icon="pi pi-lock-open" 
-                            size="small" 
-                            @click="editableNacimiento = true" 
-                        />
-                        <Button 
-                            v-else 
-                            label="Bloquear" 
-                            icon="pi pi-lock" 
-                            size="small" 
-                            severity="danger"
-                            @click="editableNacimiento = false" 
-                        />
-                    </div>
-                    <small v-if="submitted && !usuario.nacimiento" class="text-red-500">La fecha de nacimiento es obligatoria.</small>
-                    <small v-else-if="serverErrors.nacimiento" class="text-red-500">{{ serverErrors.nacimiento[0] }}</small>
+                    <small v-if="submitted && !usuario.nacimiento" class="text-red-500">
+                        La fecha de nacimiento es obligatoria.
+                    </small>
+                    <small v-else-if="serverErrors.nacimiento" class="text-red-500">
+                        {{ serverErrors.nacimiento[0] }}
+                    </small>
                 </div>
 
                 <div class="sm:col-span-6">
@@ -99,27 +89,17 @@
                         Usuario <span class="text-red-500">*</span>
                     </label>
                     <InputText 
-                        v-model="usuario.username" 
-                        :disabled="!editableUsername" 
-                        fluid 
+                        id="username"
+                        v-model="usuario.username"
+                        disabled
+                        fluid
                     />
-                    <div class="mt-2 flex gap-2 flex-wrap">
-                        <Button 
-                            v-if="!editableUsername" 
-                            label="Desbloquear" 
-                            icon="pi pi-lock-open" 
-                            size="small" 
-                            @click="editableUsername = true" 
-                        />
-                        <Button 
-                            v-else 
-                            label="Bloquear" 
-                            icon="pi pi-lock" 
-                            size="small" 
-                            severity="danger"
-                            @click="editableUsername = false" 
-                        />
-                    </div>
+                    <small v-if="submitted && !usuario.username" class="text-red-500">
+                        El nombre de usuario es obligatorio.
+                    </small>
+                    <small v-else-if="serverErrors.username" class="text-red-500">
+                        {{ serverErrors.username[0] }}
+                    </small>
                 </div>
             </div>
 
@@ -185,6 +165,7 @@ import Password from 'primevue/password';
 import Dropdown from 'primevue/dropdown';
 import { useToast } from 'primevue/usetoast';
 import { defineEmits } from 'vue';
+import Calendar from 'primevue/calendar';
 
 interface Rol {
     id: number;
@@ -195,7 +176,7 @@ interface Usuario {
     dni: string;
     name: string;
     apellidos: string;
-    nacimiento: string;
+    nacimiento: Date | null;
     email: string;
     username: string;
     password: string;
@@ -212,6 +193,7 @@ interface ServerErrors {
     password?: string[];
     status?: string[];
     role_id?: string[];
+    username?: string[];
 }
 
 const toast = useToast();
@@ -222,14 +204,12 @@ const serverErrors = ref<ServerErrors>({});
 const emit = defineEmits<{
     (e: 'usuario-agregado'): void;
 }>();
-const editableNacimiento = ref(false);
-const editableUsername = ref(false);
 
 const usuarioReseteo: Usuario = {
     dni: '',
     name: '',
     apellidos: '',
-    nacimiento: '',
+    nacimiento: null,
     email: '',
     username: '',
     password: '',
@@ -243,16 +223,20 @@ function openNew(): void {
     submitted.value = false;
     usuarioDialog.value = true;
     usuario.value = { ...usuarioReseteo };
-    editableNacimiento.value = false;
-    editableUsername.value = false;
 }
 
 function hideDialog(): void {
     usuarioDialog.value = false;
     submitted.value = false;
     usuario.value = { ...usuarioReseteo };
-    editableNacimiento.value = false;
-    editableUsername.value = false;
+}
+
+function formatearFecha(fecha: Date | null): string {
+    if (!fecha) return '';
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const anio = fecha.getFullYear();
+    return `${dia}/${mes}/${anio}`;
 }
 
 function consultarusuarioPorDNI(): void {
@@ -266,9 +250,9 @@ function consultarusuarioPorDNI(): void {
 
                     usuario.value.name = nombres;
                     usuario.value.apellidos = `${apellido_paterno} ${apellido_materno}`.trim();
-                    usuario.value.nacimiento = fecha_nacimiento;
+                    usuario.value.nacimiento = fecha_nacimiento ? new Date(fecha_nacimiento) : null;
 
-                    usuario.value.username = generarUsername(nombres, apellido_paterno, apellido_materno, fecha_nacimiento);
+                    usuario.value.username = generarUsername(nombres, apellido_paterno, apellido_materno, usuario.value.nacimiento);
                 } else {
                     toast.add({ severity: 'warn', summary: 'No encontrado', detail: 'No se encontraron datos para este DNI', life: 3000 });
                 }
@@ -279,29 +263,46 @@ function consultarusuarioPorDNI(): void {
     }
 }
 
-function generarUsername(nombre: string, apellidoPaterno: string, apellidoMaterno: string, nacimiento: string): string {
-    const normalizar = (texto: string) => {
-        return texto
+function generarUsername(nombre: string, apellidoPaterno: string, apellidoMaterno: string, nacimiento: Date | null): string {
+    const normalizar = (texto: string) =>
+        texto
             ?.replace(/ñ/g, 'n')
             .replace(/Ñ/g, 'n')
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase() || '';
-    };
 
     const primeraLetraNombre = normalizar(nombre)?.charAt(0);
     const primerApellido = normalizar(apellidoPaterno)?.split(' ')[0];
     const segundoApellido = normalizar(apellidoMaterno)?.split(' ')[0]?.substring(0, 2);
-    const diaNacimiento = nacimiento?.split('/')?.[0]?.padStart(2, '0') || '00';
+
+    let diaNacimiento = '00';
+    if (nacimiento instanceof Date) {
+        diaNacimiento = nacimiento.getDate().toString().padStart(2, '0');
+    }
 
     return `${primeraLetraNombre}${primerApellido}${segundoApellido}${diaNacimiento}`.toUpperCase();
+}
+
+function actualizarUsername(): void {
+    usuario.value.username = generarUsername(
+        usuario.value.name,
+        usuario.value.apellidos.split(' ')[0] || '',
+        usuario.value.apellidos.split(' ')[1] || '',
+        usuario.value.nacimiento
+    );
 }
 
 function guardarUsuario(): void {
     submitted.value = true;
     serverErrors.value = {};
 
-    axios.post('/usuarios', usuario.value)
+    const datosEnviar = {
+        ...usuario.value,
+        nacimiento: formatearFecha(usuario.value.nacimiento),
+    };
+
+    axios.post('/usuarios', datosEnviar)
         .then(() => {
             toast.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario registrado', life: 3000 });
             hideDialog();
@@ -310,16 +311,7 @@ function guardarUsuario(): void {
         .catch((error: AxiosError) => {
             if (error.response && error.response.status === 422) {
                 const errors = (error.response.data as any).errors;
-                serverErrors.value = {
-                    dni: errors.dni,
-                    name: errors.name,
-                    apellidos: errors.apellidos,
-                    nacimiento: errors.nacimiento,
-                    email: errors.email,
-                    password: errors.password,
-                    status: errors.status,
-                    role_id: errors.role_id
-                };
+                serverErrors.value = errors;
             }
         });
 }

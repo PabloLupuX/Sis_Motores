@@ -41,8 +41,6 @@ const model = computed<MenuItem[]>(() => [
         label: 'Gestion de Trabajo',
         items: [
             hasPermission('ver espacios') && { label: 'Espacios', icon: 'pi pi-fw pi-briefcase', to: '/espacios' },
-            hasPermission('ver horarios') && { label: 'Horarios', icon: 'pi pi-fw pi-clock', to: '/horarios' },
-            hasPermission('ver movimientos') && { label: 'Movimientos', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/movimientos' },
         ].filter(Boolean) as MenuItem[],
     },
     {
@@ -50,21 +48,6 @@ const model = computed<MenuItem[]>(() => [
         items: [
             hasPermission('ver usuarios') && { label: 'Gestión de Usuarios', icon: 'pi pi-fw pi-user-edit', to: '/usuario' },
             hasPermission('ver roles') && { label: 'Roles', icon: 'pi pi-fw pi-shield', to: '/roles' },
-            (hasPermission('ver empleados') || hasPermission('ver tipos_empleados')) && {
-                label: 'Empleado',
-                icon: 'pi pi-fw pi-id-card',
-                items: [
-                    hasPermission('ver empleados') && { label: 'Empleados', icon: 'pi pi-fw pi-id-card', to: '/empleados' },
-                    hasPermission('ver tipos_empleados') && { label: 'Tipo de empleados', icon: 'pi pi-fw pi-sitemap', to: '/tipo_empleados' },
-                ].filter(Boolean) as MenuItem[],
-            },
-        ].filter(Boolean) as MenuItem[],
-    },
-    {
-        label: 'Gestion de Alertas',
-        items: [
-            hasPermission('ver alertas') && { label: 'Alertas', icon: 'pi pi-fw pi-bell', to: '/alertas' },
-            hasPermission('ver configuraciones de alerta') && { label: 'Configuración de alertas', icon: 'pi pi-fw pi-cog', to: '/config_alertas' },
         ].filter(Boolean) as MenuItem[],
     },
 ].filter(section => section.items && section.items.length > 0) as MenuItem[]);

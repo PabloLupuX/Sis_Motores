@@ -6,7 +6,7 @@ import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // Importamos Heroicons
-import { FingerPrintIcon } from '@heroicons/vue/24/solid';
+import { WrenchIcon } from '@heroicons/vue/24/solid';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -37,8 +37,8 @@ const cancelLogout = () => {
       </button>
       <!-- Logo con ícono + texto -->
       <Link href="/dashboard" class="layout-topbar-logo flex items-center gap-2">
-          <FingerPrintIcon class="h-8 w-8 text-primary" />
-          <span class="font-serif text-base font-semibold">Sistema de Reconocimiento</span>
+          <WrenchIcon class="h-8 w-8 text-primary" />
+          <span class="font-serif text-base font-semibold">Sistema de Logistica</span>
       </Link>
     </div>
 

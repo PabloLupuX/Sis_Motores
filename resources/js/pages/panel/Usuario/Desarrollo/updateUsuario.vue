@@ -212,7 +212,7 @@ onMounted(() => {
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-9">
                 <label class="block font-bold mb-3">DNI <span class="text-red-500">*</span></label>
-                <InputText v-model="user.dni" maxlength="8" required @keyup.enter="buscarPorDni" fluid />
+                <InputText v-model="user.dni" maxlength="8" required @keyup.enter="buscarPorDni" fluid disabled/>
             </div>
             <div class="sm:col-span-3 flex flex-col">
                 <label class="block font-bold mb-2">Estado <span class="text-red-500">*</span></label>

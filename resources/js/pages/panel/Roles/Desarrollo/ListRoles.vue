@@ -19,7 +19,7 @@
                         <InputIcon>
                             <i class="pi pi-search" />
                         </InputIcon>
-                        <InputText v-model="filters['global'].value" placeholder="Buscar..." />
+                        <InputText v-model="filters['global'].value" placeholder="Buscar rol..." />
                     </IconField>
                 </div>
             </template>

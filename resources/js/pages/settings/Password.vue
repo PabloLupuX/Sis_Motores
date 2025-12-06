@@ -68,7 +68,7 @@ const updatePassword = () => {
                 form.reset('password', 'password_confirmation');
                 // Enfocar el campo password usando querySelector como alternativa segura
                 setTimeout(() => {
-                    document.querySelector('#password input')?.focus();
+                    (document.querySelector('#password input') as HTMLElement)?.focus();
                 }, 100);
             }
 
@@ -76,7 +76,7 @@ const updatePassword = () => {
                 form.reset('current_password');
                 // Enfocar el campo current_password usando querySelector como alternativa segura
                 setTimeout(() => {
-                    document.querySelector('#current_password input')?.focus();
+                    (document.querySelector('#current_password input') as HTMLElement)?.focus();
                 }, 100);
             }
         },
@@ -92,63 +92,71 @@ const updatePassword = () => {
   <div
     class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen w-full px-4 sm:px-6"
   >
-    <div class="flex flex-col items-center justify-center w-full max-w-md">
-      <div
-        class="w-full bg-surface-0 dark:bg-surface-900 rounded-3xl shadow-lg py-10 px-6 sm:py-14 sm:px-12"
-      >
+    <div
+      class="w-full max-w-4xl bg-surface-0 dark:bg-surface-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+    >
+      <!-- IMAGEN LATERAL -->
+      <div class="hidden md:block w-1/2 relative">
+        <img
+          src="/imagenes/access/logis.jpg"
+          alt="Imagen"
+          class="h-full w-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div class="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center">
         <!-- Encabezado -->
         <div class="text-center mb-8">
-          <h1 class="text-surface-900 dark:text-surface-0 text-2xl sm:text-3xl font-semibold mb-2">
+          <h1 class="text-surface-900 dark:text-surface-0 text-3xl font-bold mb-2">
             Actualizar Contraseña
           </h1>
-          <p class="text-muted-color text-sm sm:text-base">
-            Asegúrate de usar una contraseña segura y difícil de adivinar.
+          <p class="text-muted-color text-sm">
+            Mantén tu cuenta protegida usando una contraseña segura y dificil de adivinar.
           </p>
         </div>
 
         <!-- Formulario -->
-        <form @submit.prevent="updatePassword" class="space-y-6">
+        <form @submit.prevent="updatePassword" class="space-y-7">
+          
           <!-- Contraseña Actual -->
           <div>
             <label
               for="current_password"
-              class="block text-surface-900 dark:text-surface-0 text-base sm:text-lg font-medium mb-1"
+              class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-1"
             >
               Contraseña Actual
             </label>
+
             <Password
               id="current_password"
               ref="currentPasswordInput"
               v-model="form.current_password"
               class="w-full"
               toggleMask
-              inputClass="w-full"
               :feedback="false"
+              inputClass="w-full" 
             />
+
             <small
-            v-if="form.errors.current_password || (formSubmitted && !form.current_password)"
-            class="text-red-600 text-sm font-medium"
+              v-if="form.errors.current_password || (formSubmitted && !form.current_password)"
+              class="text-red-600 text-sm font-medium"
             >
-            {{ form.errors.current_password || 'Este campo es obligatorio' }}
+              {{ form.errors.current_password || 'Este campo es obligatorio' }}
             </small>
-            <Message
-              v-if="form.errors.current_password"
-              severity="error"
-              :closable="false"
-              class="mt-2 text-sm"
-            >
-              {{ form.errors.current_password }}
-            </Message>
           </div>
 
           <!-- Nueva Contraseña -->
           <div>
             <label
               for="password"
-              class="block text-surface-900 dark:text-surface-0 font-medium text-base sm:text-lg mb-1"
+              class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-1"
             >
               Nueva Contraseña
             </label>
+
             <Password
               id="password"
               ref="passwordInput"
@@ -157,6 +165,7 @@ const updatePassword = () => {
               class="w-full"
               inputClass="w-full"
             />
+
             <small
               v-if="form.errors.password || (formSubmitted && !form.password)"
               class="text-red-600 text-sm font-medium"
@@ -169,18 +178,20 @@ const updatePassword = () => {
           <div>
             <label
               for="password_confirmation"
-              class="block text-surface-900 dark:text-surface-0 font-medium text-base sm:text-lg mb-1"
+              class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-1"
             >
               Confirmar Contraseña
             </label>
+
             <Password
               id="password_confirmation"
               v-model="form.password_confirmation"
               toggleMask
               class="w-full"
-              inputClass="w-full"
               :feedback="false"
+              inputClass="w-full"
             />
+
             <small
               v-if="form.errors.password_confirmation || (formSubmitted && !form.password_confirmation)"
               class="text-red-600 text-sm font-medium"
@@ -189,12 +200,12 @@ const updatePassword = () => {
             </small>
           </div>
 
-          <!-- Mensaje de error general -->
+          <!-- Error general -->
           <Message
             v-if="errorMessage"
             severity="error"
             :closable="false"
-            class="mb-4 w-full text-sm"
+            class="mb-2 text-sm"
           >
             {{ errorMessage }}
           </Message>
@@ -203,21 +214,21 @@ const updatePassword = () => {
           <Button
             type="submit"
             label="Guardar Contraseña"
-            class="w-full"
+            class="w-full py-3 font-medium"
             :loading="form.processing"
             @click="logFormState"
           />
 
-          <!-- Mensaje de éxito -->
+          <!-- Éxito -->
           <Message
             v-if="form.recentlySuccessful"
             severity="success"
             :closable="false"
-            :life="3000"
-            class="w-full text-sm"
+            class="text-sm mt-3"
           >
             ¡Contraseña actualizada!
           </Message>
+
         </form>
       </div>
     </div>

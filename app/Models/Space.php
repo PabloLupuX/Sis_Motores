@@ -21,15 +21,9 @@ class Space extends Model
     protected $casts = [
         'state' => 'boolean',
     ];
-    public function Schedules(): HasMany {
-        return $this->hasMany(Schedule::class, 'idEspacio', 'id');
-    }
-    public function Movements(): HasMany {
-        return $this->hasMany(Movement::class, 'idEspacio', 'id');
-    }
-
-    public function tieneRelaciones(): bool
+    /*public function tieneRelaciones(): bool
     {
     return $this->Schedules()->exists() || $this->Movements()->exists();
-    }
+    }*/
+    //PONER LAS RELACIONES QUE EXISTEN CON OTROS MODELOS
 }

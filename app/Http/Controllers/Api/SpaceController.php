@@ -75,13 +75,13 @@ class SpaceController extends Controller
     public function destroy(Space $space)
     {
         Gate::authorize('delete', $space);
-        if($space->tieneRelaciones())
+        /*if($space->tieneRelaciones())
         {
             return response()->json([
                 'state'=>false,
                 'message'=> 'No se puede eliminar este espacio porque tiene relaciones con otros registros.'
             ],400);
-        }
+        }*///PONER AQUI LAS RELACIONES QUE EXISTEN CON OTROS MODELOS
         $space->delete();
         return response()->json([
             'state' => true,
