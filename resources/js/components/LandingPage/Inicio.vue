@@ -10,14 +10,15 @@
       <!-- Texto principal -->
       <div>
         <h1 class="text-4xl md:text-6xl font-bold text-blue-700 dark:text-cyan-400 mb-4 transition-colors duration-500">
-          Sistema de <br />
+          Sistema de Gestión <br />
           <span class="text-blue-900 dark:text-cyan-200">
-            Reconocimiento Facial y Dactilar para la Gestión Eficiente de Espacios de trabajo
+            de Motores para Talleres y Centros Mecánicos
           </span>
         </h1>
+
         <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 transition-colors duration-500">
-          Una solución inteligente para la identificación segura, rápida y confiable.
-          Ideal para empresas, instituciones y sistemas de control de acceso modernos.
+          Administra fácilmente el registro, mantenimiento, limpieza y control de motores. 
+          Optimiza tu taller con una plataforma moderna, rápida y diseñada para técnicos mecánicos.
         </p>
 
         <div class="flex space-x-4">
@@ -42,7 +43,7 @@
             v-for="(img, index) in images"
             :key="index"
             :src="img"
-            alt="Sistema biométrico"
+            alt="Motores en mantenimiento"
             class="w-full h-[480px] object-cover flex-shrink-0"
           />
         </div>
@@ -78,28 +79,30 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const images = [
-  "/imagenes/biometrico5.jpg",
-  "/imagenes/biometrico6.jpg",
-  "/imagenes/biometrico2.png",
-  "/imagenes/biometrico3.png",
-  "/imagenes/biometrico4.png",
+  "/imagenes/motor1.jpeg",
+  "/imagenes/motor2.jpg",
+  "/imagenes/motor3.jpg",
+  "/imagenes/motor4.jpg",
+  "/imagenes/motor5.jpg",
 ];
 
 const currentIndex = ref(0);
 
-const prev = (): void => {
+const prev = () => {
   currentIndex.value = (currentIndex.value - 1 + images.length) % images.length;
 };
 
-const next = (): void => {
+const next = () => {
   currentIndex.value = (currentIndex.value + 1) % images.length;
 };
 
 // Cambio automático cada 5 segundos
 let intervalId: number;
+
 onMounted(() => {
   intervalId = window.setInterval(next, 5000);
 });
+
 onUnmounted(() => {
   clearInterval(intervalId);
 });

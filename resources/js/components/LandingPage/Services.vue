@@ -21,14 +21,38 @@
 </template>
 
 <script setup lang="ts">
-import { Fingerprint, Camera, Shield, Clock, UserCheck, Database } from "lucide-vue-next";
+import { Wrench, Settings, Users, ClipboardList, Database, FileDown, History, PackageCheck } from "lucide-vue-next";
 
 const servicios = [
-  { titulo: "Reconocimiento Facial", descripcion: "Identificación mediante análisis de rasgos faciales en tiempo real.", icon: Camera },
-  { titulo: "Reconocimiento Dactilar", descripcion: "Lectura precisa y rápida de huellas dactilares con tecnología biométrica.", icon: Fingerprint },
-  { titulo: "Seguridad de Datos", descripcion: "Cifrado avanzado y almacenamiento seguro de información biométrica.", icon: Shield },
-  { titulo: "Registro Automático", descripcion: "Control de asistencia y accesos sin contacto físico.", icon: Clock },
-  { titulo: "Gestión de Usuarios", descripcion: "Panel administrativo para la gestión y verificación de identidades.", icon: UserCheck },
-  { titulo: "Base de Datos Inteligente", descripcion: "Sincronización con sistemas externos y almacenamiento eficiente.", icon: Database },
+  {
+    titulo: "Gestión de Motores",
+    descripcion: "Registro, clasificación y control completo de motores en reparación, limpieza o diagnóstico.",
+    icon: Settings,
+  },
+  {
+    titulo: "Mantenimiento y Reparaciones",
+    descripcion: "Administración de trabajos mecánicos: limpieza profunda, pruebas, cambios de piezas y diagnósticos.",
+    icon: Wrench,
+  },
+  {
+    titulo: "Gestión de Clientes",
+    descripcion: "Control organizado de clientes, historial de servicios y motores atendidos.",
+    icon: Users,
+  },
+  {
+    titulo: "Control de Accesorios",
+    descripcion: "Inventario de accesorios y repuestos instalados o reemplazados en cada motor.",
+    icon: PackageCheck,
+  },
+  {
+    titulo: "Historial de Servicios",
+    descripcion: "Registro detallado del estado, procesos realizados y seguimiento para cada motor.",
+    icon: History,
+  },
+  {
+    titulo: "Reportes PDF y Excel",
+    descripcion: "Exportación rápida de motores, clientes, servicios y accesorios en formatos profesionales.",
+    icon: FileDown,
+  },
 ];
 </script>

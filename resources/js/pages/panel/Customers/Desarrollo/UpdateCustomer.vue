@@ -81,10 +81,10 @@ const fetchCustomer = async () => {
             nombres: data.nombres,
             alias: data.alias ?? '',
             telefono: data.telefono ?? '',
-            state: data.state, // 👈 ahora correcto
+            state: data.state,
         };
 
-    } catch (_error) {
+    } catch {
         toast.add({
             severity: 'error',
             summary: 'Error',
@@ -95,6 +95,7 @@ const fetchCustomer = async () => {
         loading.value = false;
     }
 };
+
 
 // Update customer
 const updateCustomer = async () => {

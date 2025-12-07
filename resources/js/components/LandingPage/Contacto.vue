@@ -11,8 +11,9 @@
         Contáctanos
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-gray-300">
-        ¿Tienes dudas sobre el sistema de reconocimiento facial y dactilar? 
-        Escríbenos y nuestro equipo técnico te brindará asistencia personalizada.
+        ¿Necesitas soporte con el sistema de gestión de motores, mantenimiento,
+        clientes o reparaciones?  
+        Escríbenos y nuestro equipo técnico te ayudará inmediatamente.
       </p>
     </div>
 
@@ -46,10 +47,7 @@
     <!-- Botón que abre el modal -->
     <Dialog>
       <DialogTrigger as-child>
-        <button 
-          class="mt-12 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow">
-          Enviar mensaje
-        </button>
+       
       </DialogTrigger>
 
       <DialogContent 
@@ -90,7 +88,7 @@
 
           <div class="sm:col-span-2">
             <label class="block text-gray-700 dark:text-gray-200 font-medium mb-2">Mensaje</label>
-            <textarea v-model="form.subject" rows="4" class="w-full rounded-lg border px-4 py-2" required placeholder="Escríbenos tus consultas técnicas o solicitudes..."></textarea>
+            <textarea v-model="form.subject" rows="4" class="w-full rounded-lg border px-4 py-2" required placeholder="Escríbenos tus consultas sobre motores, mantenimiento o clientes..."></textarea>
           </div>
 
           <div class="flex justify-between sm:col-span-2 gap-4">
@@ -127,7 +125,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import axios from 'axios'
-import { MapPin, Phone, Mail, Cpu } from 'lucide-vue-next'
+import { MapPin, Phone, Mail, Wrench } from 'lucide-vue-next'
 import {
   Dialog,
   DialogTrigger,
@@ -140,10 +138,10 @@ import {
 } from '@/components/ui/dialog'
 
 const contactos = [
-  { title: 'Oficina principal', icon: MapPin, info: 'Av. Los Innovadores 120, Sullana, Piura, Perú' },
-  { title: 'Soporte técnico', icon: Phone, info: `<a href="tel:+51912345678">+51 912 345 678</a>` },
-  { title: 'Correo institucional', icon: Mail, info: `<a href="mailto:soporte@biometria.pe">soporte@biometria.pe</a>` },
-  { title: 'Área de desarrollo', icon: Cpu, info: 'Equipo especializado en reconocimiento facial y dactilar.' },
+  { title: 'Taller Central', icon: MapPin, info: 'Av. Los Motores 251, Sullana, Piura, Perú' },
+  { title: 'Soporte y Mantenimiento', icon: Phone, info: `<a href="tel:+51987654321">+51 987 654 321</a>` },
+  { title: 'Correo de atención', icon: Mail, info: `<a href="mailto:soporte@sistemamotores.pe">soporte@sistemamotores.pe</a>` },
+  { title: 'Área técnica', icon: Wrench, info: 'Especialistas en diagnóstico y reparación de motores.' },
 ]
 
 const mensaje = reactive({
@@ -167,12 +165,11 @@ const limpiarFormulario = () => {
 
 const enviarFormulario = async () => {
   try {
-    await axios.post('/contacto-biometrico', form)
-    mensaje.text = 'Tu mensaje fue enviado correctamente 👌 Nuestro equipo te contactará pronto.'
+    await axios.post('/contacto-motores', form)
+    mensaje.text = 'Tu mensaje fue enviado correctamente 👌 Nuestro equipo se comunicará contigo pronto.'
     mensaje.tipo = 'success'
     limpiarFormulario()
   } catch (error) {
-    console.error(error)
     mensaje.text = 'Error al enviar el mensaje. Por favor, intenta nuevamente.'
     mensaje.tipo = 'error'
   }

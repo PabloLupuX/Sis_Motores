@@ -109,10 +109,10 @@ const fetchEngine = async () => {
             marca: data.marca,
             modelo: data.modelo,
             year: data.year,
-            state: data.state,           // 👈 AÑADIDO
+            state: data.state,
         };
 
-} catch (_error) {
+    } catch {
         toast.add({
             severity: 'error',
             summary: 'Error',
@@ -123,6 +123,7 @@ const fetchEngine = async () => {
         loading.value = false;
     }
 };
+
 
 // Update engine
 const updateEngine = async () => {
