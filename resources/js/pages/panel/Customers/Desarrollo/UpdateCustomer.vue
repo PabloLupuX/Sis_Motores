@@ -84,7 +84,7 @@ const fetchCustomer = async () => {
             state: data.state, // 👈 ahora correcto
         };
 
-    } catch (error) {
+    } catch (_error) {
         toast.add({
             severity: 'error',
             summary: 'Error',

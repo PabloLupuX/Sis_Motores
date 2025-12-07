@@ -5,7 +5,7 @@
       <a href="#inicio" class="flex items-center space-x-2">
         <img :src="logoSrc" alt="Logo" class="h-10 w-10 cursor-pointer transition-all duration-300" />
         <span class="text-lg font-bold text-blue-700 dark:text-cyan-400 cursor-pointer">
-          Sistema Biométrico y Dactilar
+          Sistema Naútica
         </span>
       </a>
 
@@ -39,7 +39,7 @@
             <path fill-rule="evenodd"
               d="M8 0a8 8 0 100 16A8 8 0 008 0zM5.5 5.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0zM8 9c-2.21 0-4 1.57-4 3.5V13h8v-.5C12 10.57 10.21 9 8 9z" />
           </svg>
-          <span class="ml-1">Intranet</span>
+          <span class="ml-1">Login</span>
         </a>
       </div>
 

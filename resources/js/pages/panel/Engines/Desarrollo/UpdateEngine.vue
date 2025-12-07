@@ -109,11 +109,10 @@ const fetchEngine = async () => {
             marca: data.marca,
             modelo: data.modelo,
             year: data.year,
-            serie: data.serie,
             state: data.state,           // 👈 AÑADIDO
         };
 
-    } catch (error) {
+} catch (_error) {
         toast.add({
             severity: 'error',
             summary: 'Error',
