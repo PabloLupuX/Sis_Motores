@@ -7,9 +7,6 @@ import { ref, onMounted } from 'vue';
 const page = usePage();
 const mustReset = page.props.mustReset;
 
-// Usuario autenticado
-const user = page.props.auth.user;
-
 
 
 // ---------------------------
