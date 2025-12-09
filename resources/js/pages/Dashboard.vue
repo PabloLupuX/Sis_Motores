@@ -10,31 +10,7 @@ const mustReset = page.props.mustReset;
 // Usuario autenticado
 const user = page.props.auth.user;
 
-// ---------------------------
-// Saludo dinámico
-// ---------------------------
-const getGreeting = () => {
-    const hours = new Date().getHours();
-    if (hours < 12) return 'Buenos días';
-    if (hours < 18) return 'Buenas tardes';
-    return 'Buenas noches';
-};
 
-// ---------------------------
-// Mensajes motivacionales
-// ---------------------------
-const motivationalMessages = [
-    '¡Estás haciendo un gran trabajo, sigue así!',
-    '¡Hoy es un buen día para alcanzar tus metas!',
-    '¡La perseverancia te lleva lejos, nunca pares!',
-    '¡Cada paso te acerca más a tu éxito!',
-];
-
-function getMotivationalMessage() {
-    return motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-}
-
-const motivationalMessage = getMotivationalMessage();
 
 // ---------------------------
 // 📌 Datos del dashboard (API)

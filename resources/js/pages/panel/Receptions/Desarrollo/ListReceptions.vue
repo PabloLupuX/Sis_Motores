@@ -102,7 +102,8 @@ const loadReceptions = async () => {
     pagination.value.currentPage = response.data.meta.current_page;
     pagination.value.total = response.data.meta.total;
 
-  } catch (error) {
+  } catch (_error) {
+
     toast.add({
       severity: 'error',
       summary: 'Error',

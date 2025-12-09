@@ -91,7 +91,7 @@ async function loadInitialData() {
 
         accessoriesList.value = a.data.data;
 
-    } catch (e) {
+    } catch {
         toast.add({ severity: "error", summary: "Error", detail: "No se pudieron cargar listas" });
     }
 }
