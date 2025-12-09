@@ -37,14 +37,25 @@ const model = computed<MenuItem[]>(() => [
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }
         ]
     },
-    {
-        label: 'Gestion de Trabajo',
-        items: [
-            hasPermission('ver clientes') && { label: 'Clientes', icon: 'pi pi-fw pi-users', to: '/clientes' },
-            hasPermission('ver motores') && { label: 'Lista de Motores', icon: 'pi pi-fw pi-cog', to: '/motores' },
-            hasPermission('ver accesorios') && { label: 'Lista de Accesorios', icon: 'pi pi-fw pi-briefcase', to: '/accesorios' },
-        ].filter(Boolean) as MenuItem[],
-    },
+{
+    label: 'Clientes',
+    items: [
+        hasPermission('ver clientes') && { label: 'Lista de Clientes', icon: 'pi pi-users', to: '/clientes' },
+    ].filter(Boolean),
+},
+{
+    label: 'Motores',
+    items: [
+        hasPermission('ver motores') && { label: 'Lista de Motores', icon: 'pi pi-cog', to: '/motores' },
+        hasPermission('ver accesorios') && { label: 'Accesorios', icon: 'pi pi-briefcase', to: '/accesorios' }
+    ].filter(Boolean),
+},
+{
+    label: 'Recepción',
+    items: [
+        hasPermission('ver recepciones') && { label: 'Recepcion de Motores', icon: 'pi pi-inbox', to: '/recepciones' },
+    ].filter(Boolean),
+},
     {
         label: 'Usuarios y Seguridad',
         items: [

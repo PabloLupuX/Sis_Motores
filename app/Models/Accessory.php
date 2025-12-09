@@ -18,4 +18,11 @@ class Accessory extends Model
     protected $casts = [
         'state' => 'boolean',
     ];
+public function receptions()
+{
+    return $this->belongsToMany(Reception::class, 'accessory_reception')
+        ->withTimestamps(); // 👈 Opcional pero buena práctica
+}
+
+
 }

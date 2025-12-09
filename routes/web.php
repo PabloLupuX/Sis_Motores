@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\EngineController;
 use App\Http\Controllers\Api\RolesController;
 use App\Http\Controllers\Api\UsuariosController;
 use App\Http\Controllers\Api\AccessoryController;
+use App\Http\Controllers\Api\ReceptionController;
+use App\Http\Controllers\Api\ReceptionMediaController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Web\CustomersWebController;
 use App\Http\Controllers\Web\UsuarioWebController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Reportes\CustomerPDFController;
 use App\Http\Controllers\Reportes\EnginePDFController;
 use App\Http\Controllers\Reportes\AccessoriesPDFController;
 use App\Http\Controllers\Web\AccessoriesWebController;
+use App\Http\Controllers\Web\ReceptionsWebController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/clientes', [CustomersWebController::class, 'index'])->name('index.view');
     Route::get('/motores', [EnginesWebController::class, 'index'])->name('index.view');
     Route::get('/accesorios', [AccessoriesWebController::class, 'index'])->name('index.view');
+    Route::get('/recepciones', [ReceptionsWebController::class, 'index'])->name('index.view');
     Route::get('/usuario', [UsuarioWebController::class, 'index'])->name('index.view');
     Route::get('/roles', [UsuarioWebController::class, 'roles'])->name('roles.view');
     Route::get('/datos/dashboard', [DashboardController::class, 'getdatos']);
@@ -70,6 +74,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{accessory}', [AccessoryController::class, 'show'])->name('accesorios.show');
         Route::put('/{accessory}', [AccessoryController::class, 'update'])->name('accesorios.update');
         Route::delete('/{accessory}', [AccessoryController::class, 'destroy'])->name('accesorios.destroy');
+    });
+    // RECEPCION -> BACKEND
+    Route::prefix('recepcion')->group(function () {
+        Route::get('/', [ReceptionController::class, 'index'])->name('recepcion.index');
+        Route::post('/', [ReceptionController::class, 'store'])->name('recepcion.store');
+        Route::get('/{reception}', [ReceptionController::class, 'show'])->name('recepcion.show');
+        Route::put('/{reception}', [ReceptionController::class, 'update'])->name('recepcion.update');
+        Route::delete('/{reception}', [ReceptionController::class, 'destroy'])->name('recepcion.destroy');
+    });
+    // RECEPCIONMEDIA -> BACKEND
+    Route::prefix('recepcion-media')->group(function () {
+        Route::get('/', [ReceptionMediaController::class, 'index'])->name('recepcion-media.index');
+        Route::post('/', [ReceptionMediaController::class, 'store'])->name('recepcion-media.store');
+        Route::get('/{media}', [ReceptionMediaController::class, 'show'])->name('recepcion-media.show');
+        Route::put('/{media}', [ReceptionMediaController::class, 'update'])->name('recepcion-media.update');
+        Route::delete('/{media}', [ReceptionMediaController::class, 'destroy'])->name('recepcion-media.destroy');
     });
 
     #USUARIOS -> BACKEND

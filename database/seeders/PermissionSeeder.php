@@ -41,5 +41,15 @@ class PermissionSeeder extends Seeder{
         Permission::create(['name' => 'editar accesorios']);
         Permission::create(['name' => 'eliminar accesorios']);
         Permission::create(['name' => 'ver accesorios']);
+        # MediaRecepcion
+        Permission::create(['name' => 'crear media recepcion']);
+        Permission::create(['name' => 'editar media recepcion']);
+        Permission::create(['name' => 'eliminar media recepcion']);
+        Permission::create(['name' => 'ver media recepcion']);
+        # Recepcion
+        Permission::create(['name' => 'crear recepciones']);
+        Permission::create(['name' => 'editar recepciones']);
+        Permission::create(['name' => 'eliminar recepciones']);
+        Permission::create(['name' => 'ver recepciones']);
     }
 }
