@@ -29,6 +29,9 @@ class ReceptionResource extends JsonResource
             // PROBLEMA
             'problema'           => $this->problema,
 
+            //NUMERO DE SERIE
+            'numero_serie'           => $this->numero_serie,
+
             // FECHAS
             'fecha_ingreso'      => $this->fecha_ingreso,
             'fecha_resuelto'     => $this->fecha_resuelto,

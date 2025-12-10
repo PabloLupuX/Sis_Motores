@@ -16,7 +16,7 @@ interface Engine {
     marca: string;
     modelo: string;
     year: number | null;
-    serie: string;
+    s
 }
 
 interface ServerErrors {
@@ -36,7 +36,6 @@ const engine = ref<Engine>({
     marca: '',
     modelo: '',
     year: null,
-    serie: '',
 });
 
 // TIPOS DE MOTOR
@@ -70,7 +69,6 @@ function resetEngine() {
         marca: '',
         modelo: '',
         year: null,
-        serie: '',
     };
     serverErrors.value = {};
     submitted.value = false;
@@ -91,7 +89,7 @@ async function guardarEngine() {
     submitted.value = true;
     serverErrors.value = {};
 
-    if (!engine.value.hp || !engine.value.tipo || !engine.value.marca || !engine.value.modelo || !engine.value.year || !engine.value.serie) {
+    if (!engine.value.hp || !engine.value.tipo || !engine.value.marca || !engine.value.modelo || !engine.value.year|| engine.value.state === null) {
         return;
     }
 
@@ -196,31 +194,47 @@ async function guardarEngine() {
             </div>
 
             <!-- year (SELECT) -->
-            <div class="col-span-12 md:col-span-4">
-                <label class="block font-bold mb-2">year <span class="text-red-500">*</span></label>
+            <div class="col-span-12 md:col-span-6">
+                <label class="block font-bold mb-2">Año <span class="text-red-500">*</span></label>
                 <Select
                     v-model="engine.year"
                     :options="yearOptions"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Seleccionar year"
+                    placeholder="Seleccionar año"
                     class="w-full"
                 />
-                <small v-if="submitted && !engine.year" class="text-red-500">El year es obligatorio.</small>
+                <small v-if="submitted && !engine.year" class="text-red-500">El año es obligatorio.</small>
                 <small v-if="serverErrors.year" class="text-red-500">{{ serverErrors.year?.[0] }}</small>
             </div>
 
-            <!-- SERIE -->
-            <div class="col-span-12 md:col-span-8">
-                <label class="block font-bold mb-2">Serie <span class="text-red-500">*</span></label>
-                <InputText
-                    v-model.trim="engine.serie"
-                    maxlength="150"
-                    class="w-full"
-                />
-                <small v-if="submitted && !engine.serie" class="text-red-500">La serie es obligatoria.</small>
-                <small v-if="serverErrors.serie" class="text-red-500">{{ serverErrors.serie?.[0] }}</small>
-            </div>
+           <!-- ESTADO -->
+<div class="col-span-12 md:col-span-6">
+    <label class="block font-bold mb-2">
+        Estado <span class="text-red-500">*</span>
+    </label>
+
+    <Select
+        v-model="engine.state"
+        :options="[
+            { label: 'Activo', value: true },
+            { label: 'Inactivo', value: false }
+        ]"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Seleccionar estado"
+        class="w-full"
+    />
+
+    <small v-if="submitted && engine.state === null" class="text-red-500">
+        El estado es obligatorio.
+    </small>
+
+    <small v-if="serverErrors.state" class="text-red-500">
+        {{ serverErrors.state[0] }}
+    </small>
+</div>
+
 
         </div>
     </div>

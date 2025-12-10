@@ -18,6 +18,7 @@ class StoreReceptionRequest extends FormRequest
             'engine_id'           => ['required', 'exists:engines,id'],
             'customer_owner_id'   => ['required', 'exists:customers,id'],
             'customer_contact_id' => ['required', 'exists:customers,id'],
+            'numero_serie' => ['required', 'string', 'max:255'],
 
             'problema' => ['required', 'string', 'max:5000'],
 
@@ -38,6 +39,9 @@ class StoreReceptionRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'numero_serie.required' => 'El número de serie es obligatorio.',
+        'numero_serie.string'   => 'El número de serie debe ser un texto válido.',
+        'numero_serie.max'      => 'El número de serie no puede superar los 255 caracteres.',
             'engine_id.required' => 'Debe seleccionar un motor.',
             'customer_owner_id.required' => 'Debe seleccionar al cliente dueño del motor.',
             'customer_contact_id.required' => 'Debe seleccionar al cliente que entrega o recoge.',

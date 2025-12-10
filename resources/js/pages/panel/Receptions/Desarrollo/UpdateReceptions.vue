@@ -170,6 +170,7 @@ async function fetchReception() {
             fecha_entrega: data.fecha_entrega ? new Date(data.fecha_entrega) : null,
             accessories: data.accessories?.map((x: any) => x.id) || [],
             state: data.state,
+             numero_serie: data.numero_serie,
         };
 
         existingMedia.value = data.media || [];
@@ -297,25 +298,36 @@ async function updateReception() {
 
         <!-- MOTOR -->
         <div class="col-span-12">
-            <label class="font-bold">Motor *</label>
-            <Select v-model="reception.engine_id" :options="engines" optionLabel="modeloCompleto" optionValue="id" class="w-full" filter />
+            <label class="font-bold">Motor</label>
+            <Select v-model="reception.engine_id" :options="engines" optionLabel="modeloCompleto" optionValue="id" class="w-full" disabled    />
         </div>
 
         <!-- DUEÑO -->
         <div class="col-span-12">
-            <label class="font-bold">Dueño *</label>
-            <Select v-model="reception.customer_owner_id" :options="customers" optionLabel="displayName" optionValue="id" class="w-full" filter />
+            <label class="font-bold">Dueño</label>
+            <Select v-model="reception.customer_owner_id" :options="customers" optionLabel="displayName" optionValue="id" class="w-full" disabled    />
         </div>
 
         <!-- CONTACTO -->
         <div class="col-span-12">
-            <label class="font-bold">Contacto *</label>
+            <label class="font-bold">Contacto</label>
             <Select v-model="reception.customer_contact_id" :options="customers" optionLabel="displayName" optionValue="id" class="w-full" filter />
         </div>
+<!-- NUMERO DE SERIE (solo lectura) -->
+<div class="col-span-12">
+    <label class="font-bold">Número de Serie</label>
+
+    <input
+        type="text"
+        v-model="reception.numero_serie"
+        class="w-full mt-1 border rounded p-2 bg-gray-100 text-gray-600"
+        disabled
+    />
+</div>
 
         <!-- PROBLEMA -->
         <div class="col-span-12">
-            <label class="font-bold">Problema *</label>
+            <label class="font-bold">Problema</label>
             <Textarea v-model="reception.problema" rows="3" class="w-full" />
         </div>
 
@@ -327,7 +339,7 @@ async function updateReception() {
 
         <!-- FECHAS -->
         <div class="col-span-12 md:col-span-4">
-            <label class="font-bold">Fecha ingreso *</label>
+            <label class="font-bold">Fecha ingreso</label>
             <Calendar v-model="reception.fecha_ingreso" showTime hourFormat="24" class="w-full" />
         </div>
 
@@ -358,7 +370,7 @@ async function updateReception() {
 
         <!-- ARCHIVOS EXISTENTES -->
         <div class="col-span-12" v-if="existingMedia.length">
-            <h3 class="font-bold mb-2">Archivos existentes</h3>
+            <h5 class="font-bold mb-2">Archivos existentes</h5>
 
             <div class="grid grid-cols-12 gap-3">
 

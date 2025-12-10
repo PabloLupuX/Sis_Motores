@@ -17,7 +17,8 @@ class Reception extends Model
         'fecha_resuelto',
         'fecha_entrega',
         "problema",
-        'state'
+        'state',
+        'numero_serie'
     ];
 
     // ─────────────────────────────

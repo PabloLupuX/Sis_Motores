@@ -9,6 +9,7 @@ import Checkbox from 'primevue/checkbox';
 import Tag from 'primevue/tag';
 import { useToast } from 'primevue/usetoast';
 import ToolsCustomer from './toolsCustomer.vue';
+import Select from 'primevue/select';
 
 // Interfaces
 interface Customer {
@@ -162,29 +163,53 @@ async function guardarCustomer() {
                 <small v-if="serverErrors.alias" class="text-red-500">{{ serverErrors.alias[0] }}</small>
             </div>
 
-            <!-- Teléfono -->
-            <div class="col-span-12 md:col-span-6">
-                <label class="block font-bold mb-3">Teléfono</label>
-                <InputText
-                    v-model.trim="customer.telefono"
-                    maxlength="9"
-                    fluid
-                    class="w-full"
-                />
-                <small v-if="serverErrors.telefono" class="text-red-500">{{ serverErrors.telefono[0] }}</small>
-            </div>
+<!-- Teléfono -->
+<div class="col-span-12 md:col-span-6">
+    <label class="block font-bold mb-3">Teléfono</label>
 
-            <!-- Estado -->
-            <div class="col-span-12 md:col-span-4 flex flex-col">
-                <label class="block font-bold mb-2">Estado <span class="text-red-500">*</span></label>
+    <InputText
+        v-model.trim="customer.telefono"
+        maxlength="9"
+        fluid
+        class="w-full"
+        
+        @keypress="
+            ($event.key < '0' || $event.key > '9') && $event.preventDefault()
+        "
 
-                <div class="flex items-center gap-3">
-                    <Checkbox v-model="customer.state" :binary="true" />
-                    <Tag :value="customer.state ? 'Activo' : 'Inactivo'" :severity="customer.state ? 'success' : 'danger'" />
-                </div>
+        @input="
+            customer.telefono = customer.telefono.replace(/[^0-9]/g, '')
+        "
+    />
 
-                <small v-if="serverErrors.state" class="text-red-500">{{ serverErrors.state[0] }}</small>
-            </div>
+    <small v-if="serverErrors.telefono" class="text-red-500">
+        {{ serverErrors.telefono[0] }}
+    </small>
+</div>
+
+<!-- Estado -->
+<div class="col-span-12 md:col-span-4 flex flex-col">
+    <label class="block font-bold mb-2">
+        Estado <span class="text-red-500">*</span>
+    </label>
+
+    <Select
+        v-model="customer.state"
+        :options="[
+            { label: 'Activo', value: true },
+            { label: 'Inactivo', value: false }
+        ]"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Seleccionar estado"
+        class="w-full"
+    />
+
+    <small v-if="serverErrors.state" class="text-red-500">
+        {{ serverErrors.state[0] }}
+    </small>
+</div>
+
 
         </div>
     </div>

@@ -20,7 +20,8 @@ class UpdateReceptionRequest extends FormRequest
             'engine_id'           => ['sometimes', 'exists:engines,id'],
             'customer_owner_id'   => ['sometimes', 'exists:customers,id'],
             'customer_contact_id' => ['sometimes', 'exists:customers,id'],
-
+            'numero_serie' => ['required', 'string', 'max:255'],
+            
             'problema' => ['sometimes', 'string', 'max:5000'],
 
             // FECHAS OPCIONALES
@@ -54,6 +55,9 @@ class UpdateReceptionRequest extends FormRequest
         return [
             'media_new.*.type.in' => 'El tipo de archivo debe ser foto, video o audio.',
             'media_delete.*.exists' => 'Uno de los archivos a eliminar no existe.',
+              'numero_serie.required' => 'El número de serie es obligatorio.',
+        'numero_serie.string'   => 'Debe ingresar un número de serie válido.',
+        'numero_serie.max'      => 'El número de serie no puede superar los 255 caracteres.',
         ];
     }
 }

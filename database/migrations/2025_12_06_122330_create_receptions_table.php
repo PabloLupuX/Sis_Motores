@@ -19,7 +19,8 @@ return new class extends Migration
 
             // Cliente que entrega/recoge
             $table->unsignedBigInteger('customer_contact_id');
-
+            // Número de serie del motor o equipo
+            $table->string('numero_serie')->nullable();
             // Descripción del problema
             $table->text('problema')->nullable();
 
