@@ -24,7 +24,7 @@
                         fluid
                         :class="{ 'p-invalid': (submitted && !usuario.dni) || serverErrors.dni }" 
                         maxlength="8"
-                        @keydown.enter="consultarusuarioPorDNI" 
+                        @input="handleDNIChange"
                     />
                     <small v-if="submitted && !usuario.dni" class="text-red-500">El DNI es obligatorio.</small>
                     <small v-else-if="submitted && usuario.dni.length !== 8" class="text-red-500">El DNI debe tener 8 dígitos.</small>
@@ -260,6 +260,13 @@ function consultarusuarioPorDNI(): void {
             .catch(() => {
                 toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo consultar el DNI', life: 3000 });
             });
+    }
+}
+function handleDNIChange() {
+    const dni = usuario.value.dni;
+
+    if (dni.length === 8) {
+        consultarusuarioPorDNI();
     }
 }
 
