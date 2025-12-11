@@ -217,7 +217,7 @@ onMounted(() => {
     <!-- COLUMNS -->
     <Column selectionMode="multiple" style="width: 1rem" :exportable="false" />
 
-    <Column field="codigo" header="Código" sortable style="min-width: 10rem" />
+    <Column field="codigo" header="DNI - RUC" sortable style="min-width: 10rem" />
     <Column field="nombres" header="Nombres" sortable style="min-width: 12rem" />
     <Column field="alias" header="Alias" sortable style="min-width: 10rem" />
     <Column field="telefono" header="Teléfono" sortable style="min-width: 10rem" />

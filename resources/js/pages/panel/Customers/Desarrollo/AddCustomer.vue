@@ -125,7 +125,7 @@ async function guardarCustomer() {
 
             <!-- Código -->
             <div class="col-span-12 md:col-span-4">
-                <label class="block font-bold mb-3">Código <span class="text-red-500">*</span></label>
+                <label class="block font-bold mb-3">DNI - RUC <span class="text-red-500">*</span></label>
                 <InputText
                     v-model.trim="customer.codigo"
                     required

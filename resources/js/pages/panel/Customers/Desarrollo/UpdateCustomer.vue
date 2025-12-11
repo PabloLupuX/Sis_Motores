@@ -156,7 +156,7 @@ const updateCustomer = async () => {
 
             <!-- Código -->
             <div class="col-span-12 md:col-span-4">
-                <label class="block font-bold mb-2">Código *</label>
+                <label class="block font-bold mb-2">DNI - RUC *</label>
                 <InputText
                     v-model="customer.codigo"
                     maxlength="11"
