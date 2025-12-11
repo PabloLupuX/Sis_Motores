@@ -10,7 +10,7 @@ const mustReset = page.props.mustReset;
 
 
 // ---------------------------
-// 📌 Datos del dashboard (API)
+// Datos del dashboard (API)
 // ---------------------------
 const datos = ref({
     clientes: 0,
