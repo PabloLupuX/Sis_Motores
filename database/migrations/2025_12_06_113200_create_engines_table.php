@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('tipo')->nullable();        // Tipo de motor
             $table->string('marca')->nullable();       // Marca
             $table->string('modelo')->nullable();      // Modelo
-            $table->integer('year')->nullable();        // Año de fabricación
+            $table->string('combustible')->nullable(); // Tipo de combustible
             $table->boolean(column: 'state')->default(true);
 
             $table->timestamps();

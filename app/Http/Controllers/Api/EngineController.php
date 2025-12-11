@@ -31,7 +31,7 @@ public function index(Request $request)
               ->orWhereRaw('LOWER(tipo) LIKE ?', ["%{$search}%"])
               ->orWhereRaw('LOWER(marca) LIKE ?', ["%{$search}%"])
               ->orWhereRaw('LOWER(modelo) LIKE ?', ["%{$search}%"])
-              ->orWhere('year', 'LIKE', "%{$search}%");
+              ->orWhereRaw('LOWER(combustible) LIKE ?', ["%{$search}%"]);
         });
     }
     // Filtro por estado

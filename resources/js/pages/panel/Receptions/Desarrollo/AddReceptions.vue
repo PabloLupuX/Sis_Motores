@@ -10,6 +10,7 @@ import Textarea from 'primevue/textarea';
 import Toolbar from 'primevue/toolbar';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
+import ToolsReceptions from './toolsReceptions.vue';
 
 // ---------------------------------------------
 // INTERFACES
@@ -36,6 +37,12 @@ const submitted = ref(false);
 const isSaving = ref(false);
 const dialog = ref(false);
 const serverErrors = ref<ServerErrors>({});
+const props = defineProps({
+    search: String,
+    state: [String, Boolean],
+    dateRange: Array
+});
+
 
 const reception = ref<Reception>({
     engine_id: null,
@@ -172,7 +179,7 @@ async function loadEngines() {
     const res = await axios.get('/motor?per_page=9999&state=true');
     engines.value = res.data.data.map((m: any) => ({
         ...m,
-        modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.year}`,
+        modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.combustible}`,
     }));
 }
 
@@ -309,6 +316,15 @@ async function guardarRecepcion() {
         <template #start>
             <Button label="Recepción" icon="pi pi-plus" severity="secondary" @click="openNew" />
         </template>
+          <template #end>
+<ToolsReceptions
+    :search="props.search"
+    :state="props.state"
+    :dateRange="props.dateRange"
+/>
+
+
+    </template>
     </Toolbar>
 
     <Dialog v-model:visible="dialog" :style="{ width: '95vw', maxWidth: '750px' }" header="Registro de Recepción" modal>

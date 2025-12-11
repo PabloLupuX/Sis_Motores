@@ -18,7 +18,7 @@ class StoreEngineRequest extends FormRequest
             'tipo'   => 'required|string|max:100',
             'marca'  => 'required|string|max:100',
             'modelo' => 'required|string|max:150',
-            'year'    => 'required|integer|min:1900|max:2100',
+            'combustible'    => 'required|string|max:150',
             'state'    => 'required|boolean',
         ];
     }

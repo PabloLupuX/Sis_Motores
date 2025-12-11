@@ -81,7 +81,7 @@ async function loadInitialData() {
 
         engines.value = e.data.data.map((m: any) => ({
             ...m,
-            modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.year}`,
+            modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.combustible}`,
         }));
 
         customers.value = c.data.data.map((x: any) => ({
@@ -210,7 +210,7 @@ function printPDF() {
 
         <div class="header">
             <h1>REPORTE DE RECEPCIÓN</h1>
-            <p>Recepción N° ${props.receptionId}</p>
+            <p>Orden de Trabajo N° ${props.receptionId}</p>
         </div>
 
         ${content}

@@ -15,7 +15,7 @@ class EngineResource extends JsonResource
             'tipo'      => $this->tipo,
             'marca'     => $this->marca,
             'modelo'    => $this->modelo,
-            'year'       => $this->year,
+            'combustible'       => $this->combustible,
             'state'     =>  $this->state,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

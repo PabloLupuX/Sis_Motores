@@ -170,6 +170,24 @@ const props = defineProps({
 watch(() => props.refresh, () => {
     loadReceptions();
 });
+const emit = defineEmits(["updateFilters"]);
+
+watch([globalFilterValue, stateFilter, dateRange], () => {
+    emit("updateFilters", {
+        search: globalFilterValue.value,
+        state: stateFilter.value,
+        dateRange: dateRange.value
+    });
+});
+
+
+watch([globalFilterValue, stateFilter, dateRange], () => {
+    emit("updateFilters", {
+        search: globalFilterValue.value,
+        state: stateFilter.value,
+        dateRange: dateRange.value
+    });
+});
 
 onMounted(() => loadReceptions());
 </script>
@@ -247,7 +265,11 @@ onMounted(() => loadReceptions());
 
     <!-- COLUMNAS -->
     <Column selectionMode="multiple" style="width: 1rem" />
-
+<Column header="OT" style="min-width: 4rem">
+      <template #body="{ data }">
+        {{ data.id }}
+      </template>
+    </Column>
     <Column header="Motor" style="min-width: 12rem">
       <template #body="{ data }">
         {{ data.engine?.marca }} {{ data.engine?.modelo }}

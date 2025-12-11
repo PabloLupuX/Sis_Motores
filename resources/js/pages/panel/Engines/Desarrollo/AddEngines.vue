@@ -15,8 +15,9 @@ interface Engine {
     tipo: string;
     marca: string;
     modelo: string;
-    year: number | null;
-    s
+    combustible: string | null;
+    state?: boolean | null;
+
 }
 
 interface ServerErrors {
@@ -35,20 +36,22 @@ const engine = ref<Engine>({
     tipo: '',
     marca: '',
     modelo: '',
-    year: null,
+    combustible: null,
+    state: true,
 });
 
 // TIPOS DE MOTOR
 const tiposMotor = [
-    { label: 'Diesel', value: 'Diesel' },
-    { label: 'Gasolina', value: 'Gasolina' },
     { label: '2T', value: '2T' },
     { label: '4T', value: '4T' },
-    { label: 'Turbodiésel', value: 'Turbodiésel' },
-    { label: 'Híbrido', value: 'Híbrido' },
     { label: 'Eléctrico', value: 'Eléctrico' },
 ];
-
+// 🔥 TIPOS DE COMBUSTIBLE
+const combustibles = [
+    { label: 'GASOLINA', value: 'GASOLINA' },
+    { label: 'DIESEL', value: 'DIESEL' },
+    { label: 'GAS', value: 'GAS' },
+];
 // yearS (1970 → year actual)
 const yearOptions = ref<{ label: string; value: number }[]>([]);
 const currentYear = new Date().getFullYear();
@@ -68,7 +71,8 @@ function resetEngine() {
         tipo: '',
         marca: '',
         modelo: '',
-        year: null,
+        combustible: null,
+        state: true,
     };
     serverErrors.value = {};
     submitted.value = false;
@@ -89,7 +93,7 @@ async function guardarEngine() {
     submitted.value = true;
     serverErrors.value = {};
 
-    if (!engine.value.hp || !engine.value.tipo || !engine.value.marca || !engine.value.modelo || !engine.value.year|| engine.value.state === null) {
+    if (!engine.value.hp || !engine.value.tipo || !engine.value.marca || !engine.value.modelo || !engine.value.combustible|| engine.value.state === null) {
         return;
     }
 
@@ -193,20 +197,30 @@ async function guardarEngine() {
                 <small v-if="serverErrors.modelo" class="text-red-500">{{ serverErrors.modelo?.[0] }}</small>
             </div>
 
-            <!-- year (SELECT) -->
-            <div class="col-span-12 md:col-span-6">
-                <label class="block font-bold mb-2">Año <span class="text-red-500">*</span></label>
-                <Select
-                    v-model="engine.year"
-                    :options="yearOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Seleccionar año"
-                    class="w-full"
-                />
-                <small v-if="submitted && !engine.year" class="text-red-500">El año es obligatorio.</small>
-                <small v-if="serverErrors.year" class="text-red-500">{{ serverErrors.year?.[0] }}</small>
-            </div>
+            <!-- COMBUSTIBLE -->
+<div class="col-span-12 md:col-span-6">
+    <label class="block font-bold mb-2">
+        Combustible <span class="text-red-500">*</span>
+    </label>
+
+    <Select
+        v-model="engine.combustible"
+        :options="combustibles"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Seleccionar combustible"
+        class="w-full"
+    />
+
+    <small v-if="submitted && !engine.combustible" class="text-red-500">
+        El combustible es obligatorio.
+    </small>
+
+    <small v-if="serverErrors.combustible" class="text-red-500">
+        {{ serverErrors.combustible[0] }}
+    </small>
+</div>
+
 
            <!-- ESTADO -->
 <div class="col-span-12 md:col-span-6">

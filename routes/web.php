@@ -16,6 +16,7 @@ use App\Http\Controllers\Web\UsuarioWebController;
 use App\Http\Controllers\Web\EnginesWebController;
 use App\Http\Controllers\Reportes\CustomerPDFController;
 use App\Http\Controllers\Reportes\EnginePDFController;
+use App\Http\Controllers\Reportes\ReceptionsPDFController;
 use App\Http\Controllers\Reportes\AccessoriesPDFController;
 use App\Http\Controllers\Web\AccessoriesWebController;
 use App\Http\Controllers\Web\ReceptionsWebController;
@@ -116,9 +117,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export-excel-customers', [CustomerController::class, 'exportExcel'])->name('export-excel-customers');
         Route::get('/export-excel-engines', [EngineController::class, 'exportExcel'])->name('export-excel-engines');
         Route::get('/export-excel-accessories', [AccessoryController::class, 'exportExcel'])->name('export-excel-accessories');
+        Route::get('/export-excel-receptions', [ReceptionController::class, 'exportExcel'])->name('export-excel-receptions');
         Route::get('/export-pdf-customers', [CustomerPDFController::class, 'exportPDF'])->name('export-pdf-customers');
         Route::get('/export-pdf-engines', [EnginePDFController::class, 'exportPDF'])->name('export-pdf-engines');
         Route::get('/export-pdf-accessories', [AccessoriesPDFController::class, 'exportPDF'])->name('export-pdf-accessories');
+        Route::get('/export-pdf-receptions', [ReceptionsPDFController::class, 'exportPDF'])->name('export-pdf-receptions');
     });
 });
             //RUTAS PARA QUE PASEN EL TEST

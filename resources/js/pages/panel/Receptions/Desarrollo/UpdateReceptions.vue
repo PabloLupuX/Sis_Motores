@@ -143,7 +143,7 @@ async function loadInitialData() {
 
     engines.value = e.data.data.map((m: any) => ({
         ...m,
-        modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.year}`,
+        modeloCompleto: `${m.marca} - ${m.modelo} - ${m.hp} HP - ${m.combustible}`,
     }));
 
     customers.value = c.data.data.map((x: any) => ({

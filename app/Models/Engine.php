@@ -11,7 +11,7 @@ class Engine extends Model
         'tipo',
         'marca',
         'modelo',
-        'year',
+        'combustible',
         'state',
     ];
 }

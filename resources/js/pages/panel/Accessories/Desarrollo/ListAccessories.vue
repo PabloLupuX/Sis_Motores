@@ -210,7 +210,7 @@ onMounted(() => {
     <!-- COLUMNAS -->
     <Column selectionMode="multiple" style="width: 1rem" />
 
-    <Column field="name" header="Nombre" sortable style="min-width: 12rem" />
+    <Column field="name" header="Nombre" sortable style="min-width: 16rem" />
 
     <Column field="state" header="Estado" sortable style="min-width: 10rem">
       <template #body="{ data }">

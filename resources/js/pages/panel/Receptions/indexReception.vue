@@ -8,8 +8,16 @@
 
             <template v-else>
                 <div class="card">
-                    <AddReceptions @reception-agregado="refrescarListado"/>
-                    <ListReceptions :refresh="refreshKey"/>
+                     <AddReceptions 
+                        :search="filtros.search"
+                        :state="filtros.state"
+                        :dateRange="filtros.dateRange"
+                        @reception-agregado="refrescarListado" 
+                    />
+                     <ListReceptions 
+                        :refresh="refreshKey" 
+                        @updateFilters="filtros = $event"
+                    />
                 </div>
             </template>
         </div>
@@ -35,4 +43,10 @@ onMounted(() => {
         isLoading.value = false;
     }, 1000);
 });
+const filtros = ref({
+    search: "",
+    state: "",
+    dateRange: null
+});
+
 </script>

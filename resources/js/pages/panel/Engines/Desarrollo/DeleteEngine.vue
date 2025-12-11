@@ -93,8 +93,7 @@ async function deleteEngine() {
 
         <span v-if="props.engine">
             ¿Estás seguro de eliminar el motor  
-            <b>{{ props.engine.marca }} {{ props.engine.modelo }}</b>  
-            (Serie: <b>{{ props.engine.serie }}</b>)?
+            <b>{{ props.engine.marca }} {{ props.engine.modelo }}</b>?
         </span>
     </div>
 

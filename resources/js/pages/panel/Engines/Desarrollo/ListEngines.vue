@@ -219,7 +219,7 @@ watch(stateFilter, () => {
     <Column field="tipo" header="Tipo" sortable style="min-width: 10rem" />
     <Column field="marca" header="Marca" sortable style="min-width: 12rem" />
     <Column field="modelo" header="Modelo" sortable style="min-width: 12rem" />
-    <Column field="year" header="Año" sortable style="min-width: 10rem" />
+    <Column field="combustible" header="Combustible" sortable style="min-width: 10rem" />
 <Column field="state" header="Estado" sortable style="min-width: 10rem">
   <template #body="{ data }">
     <Tag 

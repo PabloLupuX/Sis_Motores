@@ -16,21 +16,16 @@ class AccessorySeeder extends Seeder
         $now = Carbon::now();
 
         $accessories = [
-            ['name' => 'Arrancador',            'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Alternador',            'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Radiador',              'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Inyector',              'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Filtro de aire',        'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Filtro de combustible', 'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Turbocargador',         'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Bomba de aceite',       'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Bomba de agua',         'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Sensor de temperatura', 'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Sensor de presión',     'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Polea',                 'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Faja / Correa',         'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Válvula EGR',           'state' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Batería',               'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'TAPA O CUBIERTA DE MOTOR',           'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'TANQUE DE COMBUSTIBLE',              'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'MANGUERA DE COMBUSTIBLE COMPLETA',   'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'LLAVE TIPO CANGREJO',                'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'SILENCIADOR DE ADMISION',            'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'SELENIO PARA CARGA DE BATERIA',      'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'PLATO DE ARRANQUE COMPLETO',         'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'HÉLICE EN BUEN ESTADO',              'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'CABLES PARA CARGA DE BATERIA',       'state' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'LLAVE DE CONTACTO ELÉCTRICO',        'state' => true, 'created_at' => $now, 'updated_at' => $now],
         ];
 
         Accessory::insert($accessories);
