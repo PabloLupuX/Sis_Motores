@@ -13,37 +13,33 @@ class ReceptionsPDFController extends Controller
         $fecha = now()->format('d-m-Y');
         $fileName = "Lista de Recepciones {$fecha}.pdf";
 
-        // RECIBIR FILTROS DEL FRONT
+        // FILTROS DEL FRONT
         $search      = request('search');
         $state       = request('state');
         $fechaInicio = request('fecha_inicio');
         $fechaFin    = request('fecha_fin');
 
-        // -------------------------------------------------------
-        //           MOSTRAR FILTROS EN EL PDF
-        // -------------------------------------------------------
-        $filtroTexto = $search ?: "Sin filtro";
-        $filtroEstado = ($state === "" || $state === null) 
-            ? "Todos" 
-            : ($state == 1 ? "Abiertos" : "Cerrados");
+        // 🔍 Texto de filtros que se mostrarán en el PDF
+        $filtroTexto  = $search ?: "Sin filtro";
+        $filtroEstado = ($state === "" || $state === null) ? "Todos" : ($state == 1 ? "Abiertos" : "Cerrados");
+        $filtroFecha  = ($fechaInicio && $fechaFin) ? "{$fechaInicio} ➝ {$fechaFin}" : "Sin filtro";
 
-        $filtroFecha = ($fechaInicio && $fechaFin)
-            ? "{$fechaInicio} ➝ {$fechaFin}"
-            : "Sin filtro";
-
-        // QUERY BASE CON RELACIONES
+        // -------------------------------------------
+        //          CONSULTA BASE + FILTROS
+        // -------------------------------------------
         $query = Reception::with([
             'engine:id,marca,modelo,hp,tipo,combustible',
             'owner:id,nombres,alias',
-            'contact:id,nombres,alias'
+            'contact:id,nombres,alias',
+            'accessories:id,name'
         ]);
 
-        // FILTRO: ESTADO
+        // FILTRO ESTADO
         if ($state !== '' && $state !== null) {
             $query->where('state', $state);
         }
 
-        // FILTRO: BUSCADOR GLOBAL
+        // FILTRO BUSCADOR
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('numero_serie', 'like', "%{$search}%")
@@ -57,7 +53,7 @@ class ReceptionsPDFController extends Controller
             });
         }
 
-        // 🗓 FILTRO: RANGO DE FECHAS (FIX)
+        // FILTRO RANGO DE FECHAS
         if ($fechaInicio && $fechaFin) {
             $query->whereBetween('fecha_ingreso', [
                 $fechaInicio . ' 00:00:00',
@@ -65,11 +61,17 @@ class ReceptionsPDFController extends Controller
             ]);
         }
 
-        // 🔥 CONSULTA FINAL
         $receptions = $query->orderBy('id', 'asc')->get();
 
-        // TRANSFORMAR DATOS
+        // Transformar datos
         $receptionsArray = $receptions->map(function ($r) {
+
+            // Convertir accesorios a texto
+            $accesoriosTexto = $r->accessories->pluck('name')->implode(', ');
+            if (!$accesoriosTexto) {
+                $accesoriosTexto = "-";
+            }
+
             return [
                 'id'             => $r->id,
                 'engine'         => $r->engine ? $r->engine->marca . ' ' . $r->engine->modelo . ' (' . $r->engine->combustible . ')' : '-',
@@ -77,6 +79,7 @@ class ReceptionsPDFController extends Controller
                 'contact'        => $r->contact->nombres ?? '-',
                 'numero_serie'   => $r->numero_serie ?? '-',
                 'problema'       => $r->problema ?? '-',
+                'accesorios'     => $accesoriosTexto,
                 'fecha_ingreso'  => $r->fecha_ingreso ?? '-',
                 'fecha_resuelto' => $r->fecha_resuelto ?? '-',
                 'fecha_entrega'  => $r->fecha_entrega ?? '-',
@@ -84,9 +87,10 @@ class ReceptionsPDFController extends Controller
             ];
         })->toArray();
 
-        // -------------------------------------------------------
-        //                      PDF
-        // -------------------------------------------------------
+
+        // -------------------------------------------
+        //                CREACIÓN DEL PDF
+        // -------------------------------------------
         $pdf = new TCPDF();
         $pdf->SetCreator('Laravel TCPDF');
         $pdf->SetTitle("Lista de Recepciones {$fecha}");
@@ -94,14 +98,14 @@ class ReceptionsPDFController extends Controller
         $pdf->SetMargins(10, 10, 10);
         $pdf->AddPage('L');
 
-        //  TÍTULO PRINCIPAL
+        // TÍTULO
         $pdf->SetFont('helvetica', 'B', 16);
         $pdf->Cell(0, 10, "LISTA DE RECEPCIONES - {$fecha}", 0, 1, 'C');
-        $pdf->Ln(2);
+        $pdf->Ln(3);
 
-        // -------------------------------------------------------
-        //             SECCIÓN "FILTROS APLICADOS"
-        // -------------------------------------------------------
+        // -------------------------------------------
+        //          MOSTRAR FILTROS APLICADOS
+        // -------------------------------------------
         $pdf->SetFont('helvetica', 'B', 11);
         $pdf->Cell(0, 7, "FILTROS APLICADOS", 0, 1, 'L');
 
@@ -110,11 +114,9 @@ class ReceptionsPDFController extends Controller
         $pdf->MultiCell(0, 6, "Estado: {$filtroEstado}", 0, 'L');
         $pdf->MultiCell(0, 6, "Fecha de ingreso: {$filtroFecha}", 0, 'L');
 
-        $pdf->Ln(3);
+        $pdf->Ln(4);
 
-        // -------------------------------------------------------
-        //                 ENCABEZADOS DE TABLAS
-        // -------------------------------------------------------
+        // ENCABEZADO DE 3 COLUMNAS
         $pdf->SetFont('helvetica', 'B', 10);
         $pdf->SetFillColor(230, 230, 230);
 
@@ -122,27 +124,26 @@ class ReceptionsPDFController extends Controller
 
         $pdf->Cell($widths[0], 8, "DATOS PRINCIPALES", 1, 0, 'C', 1);
         $pdf->Cell($widths[1], 8, "DATOS DEL PROCESO", 1, 0, 'C', 1);
-        $pdf->Cell($widths[2], 8, "PROBLEMA REPORTADO", 1, 1, 'C', 1);
+        $pdf->Cell($widths[2], 8, "PROBLEMA + ACCESORIOS", 1, 1, 'C', 1);
 
         $pdf->SetFont('helvetica', '', 9);
 
-        // -------------------------------------------------------
-        //                  CUERPO DEL REPORTE
-        // -------------------------------------------------------
+        // -------------------------------------------
+        //             CONTENIDO DEL REPORTE
+        // -------------------------------------------
         foreach ($receptionsArray as $r) {
 
             if ($pdf->GetY() > 180) {
                 $pdf->AddPage('L');
-
                 $pdf->SetFont('helvetica', 'B', 10);
                 $pdf->SetFillColor(230, 230, 230);
                 $pdf->Cell($widths[0], 8, "DATOS PRINCIPALES", 1, 0, 'C', 1);
                 $pdf->Cell($widths[1], 8, "DATOS DEL PROCESO", 1, 0, 'C', 1);
-                $pdf->Cell($widths[2], 8, "PROBLEMA REPORTADO", 1, 1, 'C', 1);
+                $pdf->Cell($widths[2], 8, "PROBLEMA + ACCESORIOS", 1, 1, 'C', 1);
                 $pdf->SetFont('helvetica', '', 9);
             }
 
-            // ⭐ COLUMNA 1
+            // COL 1 — Datos principales
             $col1 =
                 "OT: {$r['id']}\n" .
                 "Motor: {$r['engine']}\n" .
@@ -151,14 +152,16 @@ class ReceptionsPDFController extends Controller
                 "Serie: {$r['numero_serie']}\n" .
                 "Estado: {$r['state']}";
 
-            // ⭐ COLUMNA 2
+            // COL 2 — Fechas
             $col2 =
                 "Ingreso: {$r['fecha_ingreso']}\n" .
                 "Resuelto: {$r['fecha_resuelto']}\n" .
                 "Entrega: {$r['fecha_entrega']}";
 
-            // ⭐ COLUMNA 3
-            $col3 = $r['problema'];
+            // COL 3 — Problema + Accesorios
+            $col3 =
+                "PROBLEMA:\n{$r['problema']}\n\n" .
+                "ACCESORIOS:\n{$r['accesorios']}";
 
             $pdf->MultiCell($widths[0], 25, $col1, 1, 'L', 0, 0);
             $pdf->MultiCell($widths[1], 25, $col2, 1, 'L', 0, 0);

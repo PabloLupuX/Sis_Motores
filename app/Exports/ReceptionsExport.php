@@ -30,15 +30,14 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
         $query = Reception::with([
             'engine:id,marca,modelo,combustible',
             'owner:id,nombres',
-            'contact:id,nombres'
+            'contact:id,nombres',
+            'accessories:id,name' // 🔥 ACCESORIOS AÑADIDO
         ]);
 
-        // 🔍 FILTRO: ESTADO
         if ($this->state !== '' && $this->state !== null) {
             $query->where('state', $this->state);
         }
 
-        // 🔍 FILTRO: BUSCADOR GLOBAL
         if (!empty($this->search)) {
             $query->where(function ($q) {
                 $q->where('numero_serie', 'like', "%{$this->search}%")
@@ -52,7 +51,6 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
             });
         }
 
-        // 🗓 FILTRO FECHAS (IGUAL QUE PDF)
         if ($this->fechaInicio && $this->fechaFin) {
             $query->whereBetween('fecha_ingreso', [
                 $this->fechaInicio . ' 00:00:00',
@@ -65,6 +63,11 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function map($r): array
     {
+        // 🔥 Convertimos los accesorios a una lista
+        $accesorios = $r->accessories
+            ? $r->accessories->pluck('name')->implode(', ')
+            : '';
+
         return [
             $r->id,
             $r->engine->marca ?? '',
@@ -73,6 +76,7 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
             $r->owner->nombres ?? '',
             $r->contact->nombres ?? '',
             $r->numero_serie ?? '',
+            $accesorios, // 🔥 NUEVA COLUMNA
             $r->problema ?? '',
             $r->fecha_ingreso ? date('d-m-Y H:i', strtotime($r->fecha_ingreso)) : '',
             $r->fecha_resuelto ? date('d-m-Y H:i', strtotime($r->fecha_resuelto)) : '',
@@ -85,9 +89,8 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function headings(): array
     {
-        // ⭐ Mostrar filtros en Excel igual que PDF
         $filtroTexto = $this->search ?: "Sin filtro";
-        $filtroEstado = ($this->state === "" || $this->state === null) 
+        $filtroEstado = ($this->state === "" || $this->state === null)
             ? "Todos"
             : ($this->state == 1 ? "Abiertos" : "Cerrados");
 
@@ -101,7 +104,7 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
             ["📝 Búsqueda:", $filtroTexto],
             ["📌 Estado:",   $filtroEstado],
             ["📅 Fecha:",    $filtroFecha],
-            [], // Espacio
+            [],
             [
                 'OT',
                 'Marca Motor',
@@ -110,6 +113,7 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
                 'Dueño',
                 'Contacto',
                 'N° Serie',
+                'Accesorios', // 🔥 NUEVA COLUMNA
                 'Problema',
                 'Ingreso',
                 'Resuelto',
@@ -128,36 +132,30 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function styles(Worksheet $sheet)
     {
-        // Título
-        $sheet->mergeCells('A1:N1');
+        $sheet->mergeCells('A1:O1'); // 🔥 Ahora llega hasta la columna O
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        // Filtros
         $sheet->getStyle('A2')->getFont()->setBold(true);
         $sheet->getStyle('A3:A5')->getFont()->setBold(true);
 
-        // Encabezados
-        $sheet->getStyle('A7:N7')->applyFromArray([
+        $sheet->getStyle('A7:O7')->applyFromArray([
             'font' => ['bold' => true],
             'alignment' => ['horizontal' => 'center'],
             'fill' => [
                 'fillType' => 'solid',
                 'startColor' => ['rgb' => 'D9EAD3'],
             ],
-            'borders' => [
-                'allBorders' => ['borderStyle' => 'thin']
-            ]
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        // Datos
         $last = $sheet->getHighestRow();
-        $sheet->getStyle("A8:N{$last}")->applyFromArray([
+        $sheet->getStyle("A8:O{$last}")->applyFromArray([
             'alignment' => ['wrapText' => true, 'vertical' => 'center', 'horizontal' => 'center'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        foreach (range('A', 'N') as $col) {
+        foreach (range('A', 'O') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
