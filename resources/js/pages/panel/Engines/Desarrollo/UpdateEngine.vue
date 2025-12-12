@@ -60,12 +60,8 @@ const engine = ref<Engine>({
 
 // TIPOS DE MOTOR
 const tiposMotor = [
-    { label: "Diesel", value: "Diesel" },
-    { label: "Gasolina", value: "Gasolina" },
     { label: "2T", value: "2T" },
     { label: "4T", value: "4T" },
-    { label: "Turbodiésel", value: "Turbodiésel" },
-    { label: "Híbrido", value: "Híbrido" },
     { label: "Eléctrico", value: "Eléctrico" },
 ];
 
