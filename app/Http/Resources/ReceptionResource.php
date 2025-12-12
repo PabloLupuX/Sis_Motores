@@ -37,6 +37,10 @@ class ReceptionResource extends JsonResource
             'fecha_resuelto'     => $this->fecha_resuelto,
             'fecha_entrega'      => $this->fecha_entrega,
 
+
+            'tipo_mantenimiento'      => $this->tipo_mantenimiento,
+
+
             // ESTADO
             'state'              => $this->state,
 

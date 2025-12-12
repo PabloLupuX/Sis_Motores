@@ -28,6 +28,14 @@ return new class extends Migration
             $table->dateTime('fecha_ingreso')->nullable();
             $table->dateTime('fecha_resuelto')->nullable();
             $table->dateTime('fecha_entrega')->nullable();
+            // Tipo de mantenimiento
+            $table->enum('tipo_mantenimiento', [
+    'preventivo',
+    'correctivo',
+    'predictivo',
+    'proactivo',
+    'detectivo_inspeccion',
+]);
 
             // Estado
             $table->boolean('state')->default(true);

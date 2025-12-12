@@ -17,6 +17,7 @@ class Reception extends Model
         'fecha_resuelto',
         'fecha_entrega',
         "problema",
+        "tipo_mantenimiento",
         'state',
         'numero_serie'
     ];

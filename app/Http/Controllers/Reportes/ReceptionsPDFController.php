@@ -19,16 +19,20 @@ class ReceptionsPDFController extends Controller
         $fechaInicio = request('fecha_inicio');
         $fechaFin    = request('fecha_fin');
 
-        // 🔍 Texto de filtros que se mostrarán en el PDF
+        // Texto de filtros
         $filtroTexto  = $search ?: "Sin filtro";
-        $filtroEstado = ($state === "" || $state === null) ? "Todos" : ($state == 1 ? "Abiertos" : "Cerrados");
-        $filtroFecha  = ($fechaInicio && $fechaFin) ? "{$fechaInicio} ➝ {$fechaFin}" : "Sin filtro";
+        $filtroEstado = ($state === "" || $state === null)
+            ? "Todos"
+            : ($state == 1 ? "Abiertos" : "Cerrados");
+        $filtroFecha  = ($fechaInicio && $fechaFin)
+            ? "{$fechaInicio} ➝ {$fechaFin}"
+            : "Sin filtro";
 
         // -------------------------------------------
-        //          CONSULTA BASE + FILTROS
+        // CONSULTA BASE + FILTROS
         // -------------------------------------------
         $query = Reception::with([
-            'engine:id,marca,modelo,hp,tipo,combustible',
+            'engine:id,marca,modelo,combustible',
             'owner:id,nombres,alias',
             'contact:id,nombres,alias',
             'accessories:id,name'
@@ -39,17 +43,34 @@ class ReceptionsPDFController extends Controller
             $query->where('state', $state);
         }
 
-        // FILTRO BUSCADOR
+        // FILTRO BUSCADOR (case-insensitive)
         if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('numero_serie', 'like', "%{$search}%")
-                    ->orWhere('problema', 'like', "%{$search}%")
-                    ->orWhereHas('engine', function ($e) use ($search) {
-                        $e->where('marca', 'like', "%{$search}%")
-                          ->orWhere('modelo', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('owner', fn($o) => $o->where('nombres', 'like', "%{$search}%"))
-                    ->orWhereHas('contact', fn($c) => $c->where('nombres', 'like', "%{$search}%"));
+
+            $searchLower = mb_strtolower($search);
+
+            $query->where(function ($q) use ($searchLower) {
+
+                $q->whereRaw('LOWER(numero_serie) LIKE ?', ["%{$searchLower}%"])
+                  ->orWhereRaw('LOWER(problema) LIKE ?', ["%{$searchLower}%"])
+
+                  ->orWhereHas('engine', function ($e) use ($searchLower) {
+                      $e->whereRaw('LOWER(marca) LIKE ?', ["%{$searchLower}%"])
+                        ->orWhereRaw('LOWER(modelo) LIKE ?', ["%{$searchLower}%"]);
+                  })
+
+                  ->orWhereHas('owner', function ($o) use ($searchLower) {
+                      $o->where(function ($oo) use ($searchLower) {
+                          $oo->whereRaw('LOWER(nombres) LIKE ?', ["%{$searchLower}%"])
+                             ->orWhereRaw('LOWER(alias) LIKE ?', ["%{$searchLower}%"]);
+                      });
+                  })
+
+                  ->orWhereHas('contact', function ($c) use ($searchLower) {
+                      $c->where(function ($cc) use ($searchLower) {
+                          $cc->whereRaw('LOWER(nombres) LIKE ?', ["%{$searchLower}%"])
+                             ->orWhereRaw('LOWER(alias) LIKE ?', ["%{$searchLower}%"]);
+                      });
+                  });
             });
         }
 
@@ -63,38 +84,49 @@ class ReceptionsPDFController extends Controller
 
         $receptions = $query->orderBy('id', 'asc')->get();
 
-        // Transformar datos
+        // -------------------------------------------
+        // TRANSFORMAR DATOS
+        // -------------------------------------------
         $receptionsArray = $receptions->map(function ($r) {
 
-            // Convertir accesorios a texto
             $accesoriosTexto = $r->accessories->pluck('name')->implode(', ');
             if (!$accesoriosTexto) {
                 $accesoriosTexto = "-";
             }
 
+            $tipoMantenimiento = match ($r->tipo_mantenimiento) {
+                'preventivo' => 'Preventivo',
+                'correctivo' => 'Correctivo',
+                'predictivo' => 'Predictivo',
+                'proactivo' => 'Proactivo',
+                'detectivo_inspeccion' => 'Detectivo / Inspección',
+                default => '-',
+            };
+
             return [
-                'id'             => $r->id,
-                'engine'         => $r->engine ? $r->engine->marca . ' ' . $r->engine->modelo . ' (' . $r->engine->combustible . ')' : '-',
-                'owner'          => $r->owner->nombres ?? '-',
-                'contact'        => $r->contact->nombres ?? '-',
-                'numero_serie'   => $r->numero_serie ?? '-',
-                'problema'       => $r->problema ?? '-',
-                'accesorios'     => $accesoriosTexto,
-                'fecha_ingreso'  => $r->fecha_ingreso ?? '-',
-                'fecha_resuelto' => $r->fecha_resuelto ?? '-',
-                'fecha_entrega'  => $r->fecha_entrega ?? '-',
-                'state'          => $r->state ? 'ACTIVO' : 'INACTIVO',
+                'id'                 => $r->id,
+                'engine'             => $r->engine
+                    ? $r->engine->marca . ' ' . $r->engine->modelo . ' (' . $r->engine->combustible . ')'
+                    : '-',
+                'owner'              => $r->owner->nombres ?? '-',
+                'contact'            => $r->contact->nombres ?? '-',
+                'numero_serie'       => $r->numero_serie ?? '-',
+                'tipo_mantenimiento' => $tipoMantenimiento,
+                'problema'           => $r->problema ?? '-',
+                'accesorios'         => $accesoriosTexto,
+                'fecha_ingreso'      => $r->fecha_ingreso ?? '-',
+                'fecha_resuelto'     => $r->fecha_resuelto ?? '-',
+                'fecha_entrega'      => $r->fecha_entrega ?? '-',
+                'state'              => $r->state ? 'ACTIVO' : 'INACTIVO',
             ];
         })->toArray();
 
-
         // -------------------------------------------
-        //                CREACIÓN DEL PDF
+        // CREACIÓN DEL PDF
         // -------------------------------------------
         $pdf = new TCPDF();
         $pdf->SetCreator('Laravel TCPDF');
         $pdf->SetTitle("Lista de Recepciones {$fecha}");
-
         $pdf->SetMargins(10, 10, 10);
         $pdf->AddPage('L');
 
@@ -103,9 +135,7 @@ class ReceptionsPDFController extends Controller
         $pdf->Cell(0, 10, "LISTA DE RECEPCIONES - {$fecha}", 0, 1, 'C');
         $pdf->Ln(3);
 
-        // -------------------------------------------
-        //          MOSTRAR FILTROS APLICADOS
-        // -------------------------------------------
+        // FILTROS
         $pdf->SetFont('helvetica', 'B', 11);
         $pdf->Cell(0, 7, "FILTROS APLICADOS", 0, 1, 'L');
 
@@ -113,10 +143,9 @@ class ReceptionsPDFController extends Controller
         $pdf->MultiCell(0, 6, "Búsqueda: {$filtroTexto}", 0, 'L');
         $pdf->MultiCell(0, 6, "Estado: {$filtroEstado}", 0, 'L');
         $pdf->MultiCell(0, 6, "Fecha de ingreso: {$filtroFecha}", 0, 'L');
-
         $pdf->Ln(4);
 
-        // ENCABEZADO DE 3 COLUMNAS
+        // ENCABEZADO
         $pdf->SetFont('helvetica', 'B', 10);
         $pdf->SetFillColor(230, 230, 230);
 
@@ -129,7 +158,7 @@ class ReceptionsPDFController extends Controller
         $pdf->SetFont('helvetica', '', 9);
 
         // -------------------------------------------
-        //             CONTENIDO DEL REPORTE
+        // CONTENIDO
         // -------------------------------------------
         foreach ($receptionsArray as $r) {
 
@@ -143,7 +172,6 @@ class ReceptionsPDFController extends Controller
                 $pdf->SetFont('helvetica', '', 9);
             }
 
-            // COL 1 — Datos principales
             $col1 =
                 "OT: {$r['id']}\n" .
                 "Motor: {$r['engine']}\n" .
@@ -152,15 +180,14 @@ class ReceptionsPDFController extends Controller
                 "Serie: {$r['numero_serie']}\n" .
                 "Estado: {$r['state']}";
 
-            // COL 2 — Fechas
             $col2 =
+                "Tipo Mant.: {$r['tipo_mantenimiento']}\n" .
                 "Ingreso: {$r['fecha_ingreso']}\n" .
                 "Resuelto: {$r['fecha_resuelto']}\n" .
                 "Entrega: {$r['fecha_entrega']}";
 
-            // COL 3 — Problema + Accesorios
             $col3 =
-                "PROBLEMA:\n{$r['problema']}\n\n" .
+                "PROBLEMA:\n{$r['problema']}\n" .
                 "ACCESORIOS:\n{$r['accesorios']}";
 
             $pdf->MultiCell($widths[0], 25, $col1, 1, 'L', 0, 0);
@@ -168,7 +195,9 @@ class ReceptionsPDFController extends Controller
             $pdf->MultiCell($widths[2], 25, $col3, 1, 'L', 0, 1);
         }
 
-        if (ob_get_length()) ob_end_clean();
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
 
         $pdfOutput = $pdf->Output($fileName, 'S');
 

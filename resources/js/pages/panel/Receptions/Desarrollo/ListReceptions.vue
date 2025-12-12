@@ -287,7 +287,11 @@ onMounted(() => loadReceptions());
         {{ data.contact?.nombres ?? '-' }}
       </template>
     </Column>
-
+    <Column header="Mantenimiento" style="min-width: 14rem">
+      <template #body="{ data }">
+        {{ data.tipo_mantenimiento }}
+      </template>
+    </Column>
     <Column header="Problema" style="min-width: 14rem">
       <template #body="{ data }">
         {{ data.problema }}

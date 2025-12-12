@@ -39,19 +39,29 @@ const accessoriesList = ref<any[]>([]);
 const selectedFiles = ref<File[]>([]); // nuevos archivos
 const existingMedia = ref<{ id: number; type: string; url: string }[]>([]);
 const deletedMediaIds = ref<number[]>([]);
+const maintenanceTypes = ref([
+    { label: "Preventivo", value: "preventivo" },
+    { label: "Correctivo", value: "correctivo" },
+    { label: "Predictivo", value: "predictivo" },
+    { label: "Proactivo", value: "proactivo" },
+    { label: "Detectivo / Inspección", value: "detectivo_inspeccion" },
+]);
 
 // Formulario
 const reception = ref({
     engine_id: null,
     customer_owner_id: null,
     customer_contact_id: null,
+    tipo_mantenimiento: null as string | null, // 👈 NUEVO
     fecha_ingreso: null,
     fecha_resuelto: null,
     fecha_entrega: null,
     problema: "",
     accessories: [] as number[],
-    state: true, // <--- IMPORTANTE
+    state: true,
+    numero_serie: "",
 });
+
 
 // ------------ FUNCIONES ARCHIVOS ------------
 function isImage(file: File) {
@@ -164,6 +174,7 @@ async function fetchReception() {
             engine_id: data.engine_id,
             customer_owner_id: data.customer_owner_id,
             customer_contact_id: data.customer_contact_id,
+            tipo_mantenimiento: data.tipo_mantenimiento,
             problema: data.problema,
             fecha_ingreso: new Date(data.fecha_ingreso),
             fecha_resuelto: data.fecha_resuelto ? new Date(data.fecha_resuelto) : null,
@@ -223,7 +234,8 @@ async function updateReception() {
         !reception.value.customer_owner_id ||
         !reception.value.customer_contact_id ||
         !reception.value.fecha_ingreso ||
-        !reception.value.problema
+        !reception.value.problema ||
+        !reception.value.tipo_mantenimiento 
     )
         return;
 
@@ -323,6 +335,27 @@ async function updateReception() {
         class="w-full mt-1 border rounded p-2 bg-gray-100 text-gray-600"
         disabled
     />
+</div>
+<!-- TIPO DE MANTENIMIENTO -->
+<div class="col-span-12">
+    <label class="font-bold">Tipo de Mantenimiento</label>
+
+    <Select
+        v-model="reception.tipo_mantenimiento"
+        :options="maintenanceTypes"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        :disabled="isLocked"
+        placeholder="Seleccionar tipo de mantenimiento"
+    />
+
+    <small
+        v-if="submitted && !reception.tipo_mantenimiento"
+        class="text-red-500"
+    >
+        El tipo de mantenimiento es obligatorio.
+    </small>
 </div>
 
         <!-- PROBLEMA -->

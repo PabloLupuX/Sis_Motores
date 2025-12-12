@@ -23,6 +23,7 @@ interface Reception {
     problema: string | null;
     accessories: number[];
     numero_serie: string | null;
+    tipo_mantenimiento: string | null;
 }
 
 interface ServerErrors {
@@ -40,9 +41,15 @@ const serverErrors = ref<ServerErrors>({});
 const props = defineProps({
     search: String,
     state: [String, Boolean],
-    dateRange: Array
+    dateRange: Array,
 });
-
+const maintenanceTypes = ref([
+    { label: 'Preventivo', value: 'preventivo' },
+    { label: 'Correctivo', value: 'correctivo' },
+    { label: 'Predictivo', value: 'predictivo' },
+    { label: 'Proactivo', value: 'proactivo' },
+    { label: 'Detectivo / Inspección', value: 'detectivo_inspeccion' },
+]);
 
 const reception = ref<Reception>({
     engine_id: null,
@@ -52,6 +59,7 @@ const reception = ref<Reception>({
     problema: null,
     accessories: [],
     numero_serie: null,
+    tipo_mantenimiento: null,
 });
 
 // Datos remotos
@@ -236,6 +244,8 @@ function resetForm() {
         fecha_ingreso: null,
         problema: null,
         accessories: [],
+        numero_serie: null,
+        tipo_mantenimiento: null,
     };
 
     selectedFiles.value = [];
@@ -268,7 +278,8 @@ async function guardarRecepcion() {
         !reception.value.customer_contact_id ||
         !reception.value.fecha_ingreso ||
         !reception.value.problema ||
-        !reception.value.numero_serie
+        !reception.value.numero_serie ||
+        !reception.value.tipo_mantenimiento
     ) {
         return;
     }
@@ -316,15 +327,9 @@ async function guardarRecepcion() {
         <template #start>
             <Button label="Recepción" icon="pi pi-plus" severity="secondary" @click="openNew" />
         </template>
-          <template #end>
-<ToolsReceptions
-    :search="props.search"
-    :state="props.state"
-    :dateRange="props.dateRange"
-/>
-
-
-    </template>
+        <template #end>
+            <ToolsReceptions :search="props.search" :state="props.state" :dateRange="props.dateRange" />
+        </template>
     </Toolbar>
 
     <Dialog v-model:visible="dialog" :style="{ width: '95vw', maxWidth: '750px' }" header="Registro de Recepción" modal>
@@ -385,6 +390,25 @@ async function guardarRecepcion() {
 
                     <small v-if="serverErrors.numero_serie" class="text-red-500">
                         {{ serverErrors.numero_serie[0] }}
+                    </small>
+                </div>
+                <!-- TIPO DE MANTENIMIENTO -->
+                <div class="col-span-12">
+                    <label class="font-bold">Tipo de Mantenimiento *</label>
+
+                    <Select
+                        v-model="reception.tipo_mantenimiento"
+                        :options="maintenanceTypes"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccionar tipo de mantenimiento"
+                        class="mt-1 w-full"
+                    />
+
+                    <small v-if="submitted && !reception.tipo_mantenimiento" class="text-red-500"> El tipo de mantenimiento es obligatorio. </small>
+
+                    <small v-if="serverErrors.tipo_mantenimiento" class="text-red-500">
+                        {{ serverErrors.tipo_mantenimiento[0] }}
                     </small>
                 </div>
 

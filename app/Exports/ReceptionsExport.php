@@ -29,25 +29,43 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
     {
         $query = Reception::with([
             'engine:id,marca,modelo,combustible',
-            'owner:id,nombres',
-            'contact:id,nombres',
-            'accessories:id,name' // 🔥 ACCESORIOS AÑADIDO
+            'owner:id,nombres,alias',
+            'contact:id,nombres,alias',
+            'accessories:id,name'
         ]);
 
         if ($this->state !== '' && $this->state !== null) {
             $query->where('state', $this->state);
         }
 
+        // 🔍 BUSCADOR CASE-INSENSITIVE
         if (!empty($this->search)) {
-            $query->where(function ($q) {
-                $q->where('numero_serie', 'like', "%{$this->search}%")
-                  ->orWhere('problema', 'like', "%{$this->search}%")
-                  ->orWhereHas('engine', function ($e) {
-                      $e->where('marca', 'like', "%{$this->search}%")
-                        ->orWhere('modelo', 'like', "%{$this->search}%");
+
+            $search = mb_strtolower($this->search);
+
+            $query->where(function ($q) use ($search) {
+
+                $q->whereRaw('LOWER(numero_serie) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(problema) LIKE ?', ["%{$search}%"])
+
+                  ->orWhereHas('engine', function ($e) use ($search) {
+                      $e->whereRaw('LOWER(marca) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(modelo) LIKE ?', ["%{$search}%"]);
                   })
-                  ->orWhereHas('owner', fn($o) => $o->where('nombres', 'like', "%{$this->search}%"))
-                  ->orWhereHas('contact', fn($c) => $c->where('nombres', 'like', "%{$this->search}%"));
+
+                  ->orWhereHas('owner', function ($o) use ($search) {
+                      $o->where(function ($oo) use ($search) {
+                          $oo->whereRaw('LOWER(nombres) LIKE ?', ["%{$search}%"])
+                             ->orWhereRaw('LOWER(alias) LIKE ?', ["%{$search}%"]);
+                      });
+                  })
+
+                  ->orWhereHas('contact', function ($c) use ($search) {
+                      $c->where(function ($cc) use ($search) {
+                          $cc->whereRaw('LOWER(nombres) LIKE ?', ["%{$search}%"])
+                             ->orWhereRaw('LOWER(alias) LIKE ?', ["%{$search}%"]);
+                      });
+                  });
             });
         }
 
@@ -63,10 +81,16 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function map($r): array
     {
-        // 🔥 Convertimos los accesorios a una lista
-        $accesorios = $r->accessories
-            ? $r->accessories->pluck('name')->implode(', ')
-            : '';
+        $accesorios = $r->accessories->pluck('name')->implode(', ');
+
+        $tipoMantenimiento = match ($r->tipo_mantenimiento) {
+            'preventivo' => 'Preventivo',
+            'correctivo' => 'Correctivo',
+            'predictivo' => 'Predictivo',
+            'proactivo' => 'Proactivo',
+            'detectivo_inspeccion' => 'Detectivo / Inspección',
+            default => '',
+        };
 
         return [
             $r->id,
@@ -76,7 +100,8 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
             $r->owner->nombres ?? '',
             $r->contact->nombres ?? '',
             $r->numero_serie ?? '',
-            $accesorios, // 🔥 NUEVA COLUMNA
+            $tipoMantenimiento, // ✅ FIX
+            $accesorios ?: '-',
             $r->problema ?? '',
             $r->fecha_ingreso ? date('d-m-Y H:i', strtotime($r->fecha_ingreso)) : '',
             $r->fecha_resuelto ? date('d-m-Y H:i', strtotime($r->fecha_resuelto)) : '',
@@ -89,21 +114,8 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function headings(): array
     {
-        $filtroTexto = $this->search ?: "Sin filtro";
-        $filtroEstado = ($this->state === "" || $this->state === null)
-            ? "Todos"
-            : ($this->state == 1 ? "Abiertos" : "Cerrados");
-
-        $filtroFecha = ($this->fechaInicio && $this->fechaFin)
-            ? "{$this->fechaInicio} → {$this->fechaFin}"
-            : "Sin filtro";
-
         return [
             ["LISTA DE RECEPCIONES"],
-            ["FILTROS APLICADOS:"],
-            ["📝 Búsqueda:", $filtroTexto],
-            ["📌 Estado:",   $filtroEstado],
-            ["📅 Fecha:",    $filtroFecha],
             [],
             [
                 'OT',
@@ -113,7 +125,8 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
                 'Dueño',
                 'Contacto',
                 'N° Serie',
-                'Accesorios', // 🔥 NUEVA COLUMNA
+                'Tipo Mantenimiento',
+                'Accesorios',
                 'Problema',
                 'Ingreso',
                 'Resuelto',
@@ -132,14 +145,11 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->mergeCells('A1:O1'); // 🔥 Ahora llega hasta la columna O
+        $sheet->mergeCells('A1:P1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        $sheet->getStyle('A2')->getFont()->setBold(true);
-        $sheet->getStyle('A3:A5')->getFont()->setBold(true);
-
-        $sheet->getStyle('A7:O7')->applyFromArray([
+        $sheet->getStyle('A3:P3')->applyFromArray([
             'font' => ['bold' => true],
             'alignment' => ['horizontal' => 'center'],
             'fill' => [
@@ -150,12 +160,12 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
         ]);
 
         $last = $sheet->getHighestRow();
-        $sheet->getStyle("A8:O{$last}")->applyFromArray([
+        $sheet->getStyle("A4:P{$last}")->applyFromArray([
             'alignment' => ['wrapText' => true, 'vertical' => 'center', 'horizontal' => 'center'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        foreach (range('A', 'O') as $col) {
+        foreach (range('A', 'P') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
