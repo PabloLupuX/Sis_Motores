@@ -37,12 +37,20 @@ const reception = ref({
     engine_id: null as number | null,
     customer_owner_id: null as number | null,
     customer_contact_id: null as number | null,
+    tipo_mantenimiento: null as string | null,
     fecha_ingreso: null as Date | null,
     fecha_resuelto: null as Date | null,
     fecha_entrega: null as Date | null,
     problema: "",
     accessories: [] as number[],
 });
+const mantenimientoOptions = [
+    { label: "Preventivo", value: "preventivo" },
+    { label: "Correctivo", value: "correctivo" },
+    { label: "Predictivo", value: "predictivo" },
+    { label: "Proactivo", value: "proactivo" },
+    { label: "Detectivo / Inspección", value: "detectivo_inspeccion" },
+];
 
 // Abrir modal
 watch(() => props.visible, async (val) => {
@@ -107,6 +115,7 @@ async function fetchReception() {
             customer_owner_id: data.customer_owner_id,
             customer_contact_id: data.customer_contact_id,
             problema: data.problema,
+            tipo_mantenimiento: data.tipo_mantenimiento,
             fecha_ingreso: new Date(data.fecha_ingreso),
             fecha_resuelto: data.fecha_resuelto ? new Date(data.fecha_resuelto) : null,
             fecha_entrega: data.fecha_entrega ? new Date(data.fecha_entrega) : null,
@@ -274,6 +283,13 @@ function printPDF() {
                 <td class="label">Contacto:</td>
                 <td>{{ customers.find(c => c.id == reception.customer_contact_id)?.displayName }}</td>
             </tr>
+            <tr>
+    <td class="label">Mantenimiento:</td>
+    <td>
+        {{ mantenimientoOptions.find(m => m.value === reception.tipo_mantenimiento)?.label || '-' }}
+    </td>
+</tr>
+
         </table>
     </div>
 
@@ -297,19 +313,22 @@ function printPDF() {
     <div class="card">
         <div class="section-title">Fechas de Servicio</div>
         <table>
-            <tr>
-                <td class="label">Ingreso:</td>
-                <td>{{ formatDate(reception.fecha_ingreso) }}</td>
-            </tr>
-            <tr>
-                <td class="label">Resuelto:</td>
-                <td>{{ formatDate(reception.fecha_resuelto) }}</td>
-            </tr>
-            <tr>
-                <td class="label">Entrega:</td>
-                <td>{{ formatDate(reception.fecha_entrega) }}</td>
-            </tr>
-        </table>
+    <tbody>
+        <tr>
+            <td class="label">Ingreso:</td>
+            <td>{{ formatDate(reception.fecha_ingreso) }}</td>
+        </tr>
+        <tr>
+            <td class="label">Resuelto:</td>
+            <td>{{ formatDate(reception.fecha_resuelto) }}</td>
+        </tr>
+        <tr>
+            <td class="label">Entrega:</td>
+            <td>{{ formatDate(reception.fecha_entrega) }}</td>
+        </tr>
+    </tbody>
+</table>
+
     </div>
 
 </div>
@@ -353,6 +372,20 @@ function printPDF() {
                     class="w-full" 
                 />
             </div>
+
+            <div class="col-span-12 md:col-span-6">
+    <label class="font-bold">Mantenimiento</label>
+    <Select 
+        v-model="reception.tipo_mantenimiento"
+        :options="mantenimientoOptions"
+        optionLabel="label"
+        optionValue="value"
+        disabled
+        class="w-full"
+        placeholder="Tipo de mantenimiento"
+    />
+</div>
+
         </div>
 
         <!-- PROBLEMA -->
@@ -361,19 +394,29 @@ function printPDF() {
             <Textarea v-model="reception.problema" readonly rows="4" class="w-full" />
         </div>
 
-        <!-- ACCESORIOS -->
-        <div class="col-span-12">
-            <label class="font-bold">Accesorios</label>
-            <MultiSelect 
-                v-model="reception.accessories"
-                :options="accessoriesList"
-                optionLabel="name"
-                optionValue="id"
-                disabled
-                display="chip"
-                class="w-full"
-            />
-        </div>
+     <!-- ACCESORIOS -->
+<div class="col-span-12">
+    <label class="font-bold">Accesorios</label>
+
+    <ul class="mt-2 space-y-2">
+        <li
+            v-for="a in accessoriesList.filter(x => reception.accessories.includes(x.id))"
+            :key="a.id"
+            class="flex items-center gap-2 rounded border bg-gray-50 px-3 py-2"
+        >
+            <i class="pi pi-check-circle text-green-600"></i>
+            <span>{{ a.name }}</span>
+        </li>
+    </ul>
+
+    <p
+        v-if="!reception.accessories.length"
+        class="mt-2 text-sm text-gray-500"
+    >
+        No se registraron accesorios.
+    </p>
+</div>
+
 
         <!-- FECHAS -->
         <div class="col-span-12 md:col-span-4">
