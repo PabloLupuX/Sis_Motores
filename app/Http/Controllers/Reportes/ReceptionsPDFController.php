@@ -33,8 +33,8 @@ class ReceptionsPDFController extends Controller
         // -------------------------------------------
         $query = Reception::with([
             'engine:id,marca,modelo,combustible',
-            'owner:id,nombres,alias',
-            'contact:id,nombres,alias',
+            'owner:id,nombres,alias,telefono',
+            'contact:id,nombres,alias,telefono',
             'accessories:id,name'
         ]);
 
@@ -109,7 +109,9 @@ class ReceptionsPDFController extends Controller
                     ? $r->engine->marca . ' ' . $r->engine->modelo . ' (' . $r->engine->combustible . ')'
                     : '-',
                 'owner'              => $r->owner->nombres ?? '-',
+                'owner_phone'        => $r->owner->telefono ?? '-',
                 'contact'            => $r->contact->nombres ?? '-',
+                'contact_phone'      => $r->contact->telefono ?? '-',
                 'numero_serie'       => $r->numero_serie ?? '-',
                 'tipo_mantenimiento' => $tipoMantenimiento,
                 'problema'           => $r->problema ?? '-',
@@ -176,11 +178,14 @@ class ReceptionsPDFController extends Controller
                 "OT: {$r['id']}\n" .
                 "Motor: {$r['engine']}\n" .
                 "Dueño: {$r['owner']}\n" .
+                "Telf. Dueño: {$r['owner_phone']}\n" .
                 "Contacto: {$r['contact']}\n" .
-                "Serie: {$r['numero_serie']}\n" .
-                "Estado: {$r['state']}";
+                "Tel. Contacto: {$r['contact_phone']}";
+            
 
             $col2 =
+                "Serie: {$r['numero_serie']}\n" .
+                "Estado: {$r['state']}\n".
                 "Tipo Mant.: {$r['tipo_mantenimiento']}\n" .
                 "Ingreso: {$r['fecha_ingreso']}\n" .
                 "Resuelto: {$r['fecha_resuelto']}\n" .

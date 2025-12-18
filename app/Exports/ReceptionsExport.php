@@ -29,8 +29,8 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
     {
         $query = Reception::with([
             'engine:id,marca,modelo,combustible',
-            'owner:id,nombres,alias',
-            'contact:id,nombres,alias',
+            'owner:id,nombres,alias,telefono',
+            'contact:id,nombres,alias,telefono',
             'accessories:id,name'
         ]);
 
@@ -98,9 +98,11 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
             $r->engine->modelo ?? '',
             $r->engine->combustible ?? '',
             $r->owner->nombres ?? '',
+            $r->owner->telefono ?? '',
             $r->contact->nombres ?? '',
+            $r->contact->telefono ?? '',
             $r->numero_serie ?? '',
-            $tipoMantenimiento, // ✅ FIX
+            $tipoMantenimiento, 
             $accesorios ?: '-',
             $r->problema ?? '',
             $r->fecha_ingreso ? date('d-m-Y H:i', strtotime($r->fecha_ingreso)) : '',
@@ -123,7 +125,9 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
                 'Modelo Motor',
                 'Combustible',
                 'Dueño',
+                'Telf. Dueño',
                 'Contacto',
+                'Telf. Contacto',
                 'N° Serie',
                 'Tipo Mantenimiento',
                 'Accesorios',
@@ -145,11 +149,11 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->mergeCells('A1:P1');
+        $sheet->mergeCells('A1:R1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        $sheet->getStyle('A3:P3')->applyFromArray([
+        $sheet->getStyle('A3:R3')->applyFromArray([
             'font' => ['bold' => true],
             'alignment' => ['horizontal' => 'center'],
             'fill' => [
@@ -160,12 +164,12 @@ class ReceptionsExport implements FromCollection, WithHeadings, WithMapping, Wit
         ]);
 
         $last = $sheet->getHighestRow();
-        $sheet->getStyle("A4:P{$last}")->applyFromArray([
+        $sheet->getStyle("A4:R{$last}")->applyFromArray([
             'alignment' => ['wrapText' => true, 'vertical' => 'center', 'horizontal' => 'center'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        foreach (range('A', 'P') as $col) {
+        foreach (range('A', 'R') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
