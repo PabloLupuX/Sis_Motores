@@ -18,7 +18,10 @@ public function rules(): array
         'engine_id'           => ['required', 'exists:engines,id'],
         'customer_owner_id'   => ['required', 'exists:customers,id'],
         'customer_contact_id' => ['required', 'exists:customers,id'],
-        'numero_serie'        => ['required', 'string', 'max:255'],
+        'numero_serie'        => ['required', 'string', 'max:255',Rule::unique('receptions', 'numero_serie')
+        ->where(fn ($query) =>
+            $query->where('customer_owner_id', $this->customer_owner_id)
+        ),],
 
         'tipo_mantenimiento'  => ['required', Rule::in([
             'preventivo',
@@ -52,6 +55,7 @@ public function messages(): array
         'numero_serie.required' => 'El número de serie es obligatorio.',
         'numero_serie.string'   => 'El número de serie debe ser un texto válido.',
         'numero_serie.max'      => 'El número de serie no puede superar los 255 caracteres.',
+        'numero_serie.unique' => 'Este número de serie ya está registrado para otro cliente.',
 
         'engine_id.required' => 'Debe seleccionar un motor.',
         'customer_owner_id.required' => 'Debe seleccionar al cliente dueño del motor.',

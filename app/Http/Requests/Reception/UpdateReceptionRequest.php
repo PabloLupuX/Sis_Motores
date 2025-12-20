@@ -17,7 +17,11 @@ public function rules(): array
         'engine_id'           => ['sometimes', 'exists:engines,id'],
         'customer_owner_id'   => ['sometimes', 'exists:customers,id'],
         'customer_contact_id' => ['sometimes', 'exists:customers,id'],
-        'numero_serie'        => ['required', 'string', 'max:255'],
+        'numero_serie'        => ['required', 'string', 'max:255',Rule::unique('receptions', 'numero_serie')
+        ->where(fn ($query) =>
+            $query->where('customer_owner_id', $this->customer_owner_id)
+        )
+        ->ignore($this->route('reception')),],
 
         'tipo_mantenimiento'  => ['sometimes', Rule::in([
             'preventivo',
@@ -57,6 +61,7 @@ public function messages(): array
 
         'media_new.*.type.in' => 'El tipo de archivo debe ser foto, video o audio.',
         'media_delete.*.exists' => 'Uno de los archivos a eliminar no existe.',
+        'numero_serie.unique' => 'Este número de serie ya está registrado para otro cliente.',
 
         'numero_serie.required' => 'El número de serie es obligatorio.',
         'numero_serie.string'   => 'Debe ingresar un número de serie válido.',

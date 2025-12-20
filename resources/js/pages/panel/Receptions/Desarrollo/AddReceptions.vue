@@ -268,7 +268,6 @@ function openNew() {
 function hideDialog() {
     dialog.value = false;
 }
-
 async function guardarRecepcion() {
     submitted.value = true;
 
@@ -287,24 +286,24 @@ async function guardarRecepcion() {
     isSaving.value = true;
     uploadedMedia.value = [];
 
-    for (const file of selectedFiles.value) {
-        const url = await uploadFileToExternalAPI(file);
-
-        if (url) {
-            let type = 'foto';
-            if (file.type.startsWith('video')) type = 'video';
-            if (file.type.startsWith('audio')) type = 'audio';
-
-            uploadedMedia.value.push({ type, url });
-        }
-    }
-
-    const payload = {
-        ...reception.value,
-        media: uploadedMedia.value,
-    };
-
     try {
+        for (const file of selectedFiles.value) {
+            const url = await uploadFileToExternalAPI(file);
+
+            if (url) {
+                let type = 'foto';
+                if (file.type.startsWith('video')) type = 'video';
+                if (file.type.startsWith('audio')) type = 'audio';
+
+                uploadedMedia.value.push({ type, url });
+            }
+        }
+
+        const payload = {
+            ...reception.value,
+            media: uploadedMedia.value,
+        };
+
         await axios.post('/recepcion', payload);
 
         toast.add({
@@ -316,10 +315,31 @@ async function guardarRecepcion() {
 
         hideDialog();
         emit('reception-agregado');
+
+    } catch (error) {
+        // 🔴 AQUÍ mostramos el error real
+        const errors = error.response?.data?.errors;
+
+        if (errors?.numero_serie) {
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: errors.numero_serie[0],
+                life: 4000,
+            });
+        } else {
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Ocurrió un error al guardar la recepción',
+                life: 4000,
+            });
+        }
     } finally {
         isSaving.value = false;
     }
 }
+
 </script>
 
 <template>

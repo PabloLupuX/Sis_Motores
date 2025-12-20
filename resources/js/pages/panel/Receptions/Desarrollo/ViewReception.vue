@@ -123,6 +123,7 @@ async function fetchReception() {
             owner_phone: data.owner?.telefono || '-',
             contact_phone: data.contact?.telefono || '-',
             problema: data.problema,
+            numero_serie: data.numero_serie,
             tipo_mantenimiento: data.tipo_mantenimiento,
             fecha_ingreso: new Date(data.fecha_ingreso),
             fecha_resuelto: data.fecha_resuelto ? new Date(data.fecha_resuelto) : null,
@@ -428,7 +429,10 @@ function printPDF() {
                     />
                     <div class="mt-1 text-sm text-gray-600">Telf. {{ reception.contact_phone }}</div>
                 </div>
-
+         <div class="col-span-12 md:col-span-4">
+                <label class="font-bold">Nº serie</label>
+                <Calendar v-model="reception.numero_serie" disabled showTime hourFormat="24" class="w-full" />
+            </div>
                 <div class="col-span-12 md:col-span-6">
                     <label class="font-bold">Mantenimiento</label>
                     <Select
